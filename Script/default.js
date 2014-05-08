@@ -1,5 +1,5 @@
 ﻿/*global require*/
-require(["esri/map", "dojo/domReady!"], function (Map) {
+require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/domReady!"], function (Map, Legend, BasemapGallery) {
 	"use strict";
 
 	$('#tabs a').click(function (e) {
@@ -37,4 +37,12 @@ require(["esri/map", "dojo/domReady!"], function (Map) {
 		zoom: 7,
 		showAttribution: true
 	});
+
+	var legend = new Legend({ map: map }, "legendWidget");
+	legend.startup();
+
+	var basemapGallery = new BasemapGallery({
+		map: map
+	}, "basemapGallery");
+	basemapGallery.startup();
 });

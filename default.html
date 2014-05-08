@@ -1,18 +1,20 @@
 ﻿<!DOCTYPE html>
 <html lang="en-us">
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	<title>WSDOT GeoPortal</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-	<link rel="stylesheet" href="//js.arcgis.com/3.9compact/js/esri/css/esri.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="//js.arcgis.com/3.9compact/js/esri/css/esri.css" />
+	<link rel="stylesheet" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css" />
 	<link href="Style/default.css" rel="stylesheet" />
 
 
 </head>
 <body>
+	<!-- Header / Navbar -->
 	<section id="topNavBar" class="navbar navbar-inverse" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
@@ -21,16 +23,22 @@
 			</div>
 		</div>
 	</section>
-	<section id="map" class="col-sm-6 col-md-10"></section>
-	<section class="panel col-sm-6 col-md-2">
-		<div class="panel-heading"><h1>Tools</h1></div>
+	<!-- Map -->
+	<section id="map" class="col-sm-7 col-md-9"></section>
+	<!-- Tools panel-->
+	<section class="panel col-sm-5 col-md-3">
+		<div class="panel-heading"><h2>Tools</h2></div>
 		<ul id="tabs" class="nav nav-tabs">
-			<li class="active"><a href="#layers">Layers</a></li>
-			<li><a href="#legend">Legend</a></li>
+			<li class="active"><a href="#legend">Legend</a></li>
+			<li><a href="#basemaps">Basemaps</a></li>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane active" id="layers">Layers</div>
-			<div class="tab-pane" id="legend">Legend</div>
+			<div class="tab-pane active" id="legend">
+				<div id="legendWidget" class="claro"></div>
+			</div>
+			<div class="tab-pane" id="basemaps">
+				<div id="basemapGallery" class="claro"></div>
+			</div>
 		</div>
 	</section>
 

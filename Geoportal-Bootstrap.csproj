@@ -65,9 +65,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\WSDOTacronymWhite-177x39.png" />
+    <Content Include="Images\WSDOTLogoWHITE-240x39.png" />
     <Content Include="index.html" />
-    <Content Include="Images\WSDOTacronymWhite.png" />
-    <Content Include="Images\WSDOTLogoWHITE.png" />
     <Content Include="Script\index.js" />
     <Content Include="Style\index.css" />
     <Content Include="Web.config" />
@@ -87,7 +87,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>49707</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

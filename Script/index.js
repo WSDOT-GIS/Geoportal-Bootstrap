@@ -7,7 +7,7 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 		$(this).tab('show');
 	});
 
-	var map;
+	var map, legend;
 
 	/** Set the height of the map div.
 */
@@ -38,11 +38,16 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 		showAttribution: true
 	});
 
-	var legend = new Legend({ map: map }, "legendWidget");
+	map.on("load", function () {
+		var basemapGallery = new BasemapGallery({
+			map: map,
+			basemapIds: map.layerIds
+		}, "basemapGallery");
+		basemapGallery.startup();
+	});
+
+	legend = new Legend({ map: map }, "legendWidget");
 	legend.startup();
 
-	var basemapGallery = new BasemapGallery({
-		map: map
-	}, "basemapGallery");
-	basemapGallery.startup();
+
 });

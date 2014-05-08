@@ -65,11 +65,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="default.html" />
+    <Content Include="index.html" />
     <Content Include="Images\WSDOTacronymWhite.png" />
     <Content Include="Images\WSDOTLogoWHITE.png" />
-    <Content Include="Script\default.js" />
-    <Content Include="Style\default.css" />
+    <Content Include="Script\index.js" />
+    <Content Include="Style\index.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

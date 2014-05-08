@@ -15,15 +15,23 @@
 <body>
 	<section id="topNavBar" class="navbar navbar-inverse" role="navigation">
 		<div class="container">
-			<div class="navbar-header row">
-				<div class="navbar-brand"><div class="wsdot-logo col-md-2"></div>GeoPortal</div>
+			<div class="navbar-header">
+				<div class="wsdot-logo pull-left"></div>
+				<div class="navbar-brand">GeoPortal</div>
 			</div>
 		</div>
 	</section>
 	<section id="map" class="col-sm-6 col-md-10"></section>
 	<section class="panel col-sm-6 col-md-2">
 		<div class="panel-heading"><h1>Tools</h1></div>
-		<p>Tools will go here</p>
+		<ul id="tabs" class="nav nav-tabs">
+			<li class="active"><a href="#layers">Layers</a></li>
+			<li><a href="#legend">Legend</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="layers">Layers</div>
+			<div class="tab-pane" id="legend">Legend</div>
+		</div>
 	</section>
 
 

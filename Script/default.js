@@ -2,6 +2,11 @@
 require(["esri/map", "dojo/domReady!"], function (Map) {
 	"use strict";
 
+	$('#tabs a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	});
+
 	var map;
 
 	/** Set the height of the map div.

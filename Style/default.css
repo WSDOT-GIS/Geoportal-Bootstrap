@@ -1,3 +1,7 @@
-﻿html, body, #map, #mapContainer {
+﻿html, body {
 	height: 100%;
+}
+#map {
+	/*height: 90%;
+	padding-bottom: 0;*/
 }

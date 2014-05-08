@@ -5,10 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<title>WSDOT GeoPortal</title>
-	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-
-	<!-- Optional theme -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="//js.arcgis.com/3.9compact/js/esri/css/esri.css">
 	<link href="Style/default.css" rel="stylesheet" />
@@ -16,21 +13,21 @@
 
 </head>
 <body>
-	<div id="topNavBar" class="navbar navbar-inverse" role="navigation">
+	<section id="topNavBar" class="navbar navbar-inverse" role="navigation">
 		<div class="container">
-			<div class="navbar-header">
-				<div class="navbar-brand">GeoPortal</div>
+			<div class="navbar-header row">
+				<div class="navbar-brand"><div class="wsdot-logo col-md-2"></div>GeoPortal</div>
 			</div>
 		</div>
-	</div>
-	<div id="map" class="col-sm-6 col-md-10"></div>
-	<div id="tools" class="col-sm-6 col-md-2">
-		<h1>Tools</h1>
-	</div>
+	</section>
+	<section id="map" class="col-sm-6 col-md-10"></section>
+	<section class="panel col-sm-6 col-md-2">
+		<div class="panel-heading"><h1>Tools</h1></div>
+		<p>Tools will go here</p>
+	</section>
 
 
 	<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-	<!-- Latest compiled and minified JavaScript -->
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script src="//js.arcgis.com/3.9compact/"></script>
 	<script src="Script/default.js"></script>

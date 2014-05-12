@@ -7,6 +7,10 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 		$(this).tab('show');
 	});
 
+	$("[data-toggle=offcanvas]").click(function () {
+		$(".row-offcanvas").toggleClass('active');
+	});
+
 	var map, legend;
 
 	/** Set the height of the map div.
@@ -48,6 +52,4 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 
 	legend = new Legend({ map: map }, "legendWidget");
 	legend.startup();
-
-
 });

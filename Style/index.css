@@ -1,10 +1,21 @@
-﻿html{font-size:100%;}
-body{font-family:Verdana, Arial, Helvetica, sans-serif;font-size:62.5%;margin:0em;padding:0em;background-color:#f2f2f2;}
-
-html, body {
+﻿html, body {
+	overflow: hidden;
 	height: 100%;
 	/*font-family: 'Helevetica Black', Helvetica, Arial, 'DejaVu Sans', 'Liberation Sans', Freesans, sans-serif*/
 }
+
+html {
+	font-size: 100%;
+}
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 62.5%;
+	margin: 0em;
+	padding: 0em;
+	background-color: #f2f2f2;
+}
+
 #map {
 	/*height: 90%;
 	padding-bottom: 0;*/
@@ -13,13 +24,12 @@ html, body {
 .navbar-inverse {
 	background-image: none;
 	background-color: #007c66; /*Pantone 335*/
-	
 }
 
-.navbar-inverse .navbar-brand {
-	color: white;
-	/*padding-left: 3em;*/
-}
+	.navbar-inverse .navbar-brand {
+		color: white;
+		/*padding-left: 3em;*/
+	}
 
 @media only screen and (max-width : 767px) {
 	.wsdot-logo {
@@ -56,5 +66,46 @@ html, body {
 	}
 }
 
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+	.row-offcanvas {
+		position: relative;
+		-webkit-transition: all .25s ease-out;
+		-moz-transition: all .25s ease-out;
+		-o-transition: all .25s ease-out;
+		transition: all .25s ease-out;
+	}
 
+	.row-offcanvas-right {
+		right: 0;
+	}
 
+	.row-offcanvas-left {
+		left: 0;
+	}
+
+	.row-offcanvas-right .sidebar-offcanvas {
+		right: -50%; /* 6 columns */
+	}
+
+	.row-offcanvas-left .sidebar-offcanvas {
+		left: -50%; /* 6 columns */
+	}
+
+	.row-offcanvas-right.active {
+		right: 50%; /* 6 columns */
+	}
+
+	.row-offcanvas-left.active {
+		left: 50%; /* 6 columns */
+	}
+
+	.sidebar-offcanvas {
+		position: absolute;
+		top: 0;
+		width: 50%; /* 6 columns */
+	}
+}

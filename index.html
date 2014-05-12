@@ -15,31 +15,44 @@
 </head>
 <body>
 	<!-- Header / Navbar -->
-	<section id="topNavBar" class="navbar navbar-inverse" role="navigation">
+	<div id="topNavBar" class="navbar navbar-inverse" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
 				<h1 class="pull-left"><a class="wsdot-logo" href="http://www.wsdot.wa.gov/"></a></h1>
 				<h1 class="navbar-brand center-block">GeoPortal</h1>
 			</div>
 		</div>
-	</section>
-	<!-- Map -->
-	<section id="map" class="col-sm-7 col-md-9"></section>
-	<!-- Tools panel-->
-	<section class="panel col-sm-5 col-md-3">
-		<ul id="tabs" class="nav nav-tabs">
-			<li class="active"><a href="#legend">Legend</a></li>
-			<li><a href="#basemaps">Basemaps</a></li>
-		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="legend">
-				<div id="legendWidget" class="claro"></div>
+		<p class="pull-right visible-xs">
+			<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">tools</button>
+		</p>
+	</div>
+	<div class="container">
+		<div class="row row-offcanvas row-offcanvas-right">
+
+			<!-- Map -->
+			<div id="map" class="col-sm-7 col-md-9">
+
 			</div>
-			<div class="tab-pane" id="basemaps">
-				<div id="basemapGallery" class="claro"></div>
+
+			<!-- Tools panel-->
+			<div class="col-sm-5 col-md-3 sidebar-offcanvas" id="sidebar">
+				<div class="panel">
+					<ul id="tabs" class="nav nav-tabs">
+						<li class="active"><a href="#legend">Legend</a></li>
+						<li><a href="#basemaps">Basemaps</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="legend">
+							<div id="legendWidget" class="claro"></div>
+						</div>
+						<div class="tab-pane" id="basemaps">
+							<div id="basemapGallery" class="claro"></div>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
-	</section>
+		</div> <!--row--> 
+	</div>
 
 
 	<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>

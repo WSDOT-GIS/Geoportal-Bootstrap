@@ -16,30 +16,33 @@
 <body>
 	<!-- Header / Navbar -->
 	<div id="topNavBar" class="navbar navbar-inverse" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<h1 class="pull-left"><a class="wsdot-logo" href="http://www.wsdot.wa.gov/"></a></h1>
-				<h1 class="navbar-brand center-block">GeoPortal</h1>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="navbar-header">
+					<a class="wsdot-logo" href="http://www.wsdot.wa.gov/"></a>
+					<div class="navbar-brand">
+						 <span>GeoPortal</span>
+					</div>
+				</div>
 			</div>
 		</div>
-		<p class="pull-right visible-xs">
-			<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">tools</button>
-		</p>
 	</div>
-	<div class="container">
-		<div class="row row-offcanvas row-offcanvas-right">
+	<div class="container-fluid">
+		<div class="row row-offcanvas row-offcanvas-right" id="mapRow">
 
 			<!-- Map -->
-			<div id="map" class="col-sm-7 col-md-9">
-
+			<div id="map" class="col-xs-12 col-sm-7 col-md-9">
+				<div id="tools" class="visible-xs">
+					<button type="button" class="btn" data-toggle="offcanvas"><span class="glyphicon glyphicon-cog"></span></button>
+				</div>
 			</div>
 
 			<!-- Tools panel-->
 			<div class="col-sm-5 col-md-3 sidebar-offcanvas" id="sidebar">
 				<div class="panel">
 					<ul id="tabs" class="nav nav-tabs">
-						<li class="active"><a href="#legend">Legend</a></li>
-						<li><a href="#basemaps">Basemaps</a></li>
+						<li class="active"><a href="#legend"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
+						<li><a href="#basemaps"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="legend">
@@ -51,7 +54,7 @@
 					</div>
 				</div>
 			</div>
-		</div> <!--row--> 
+		</div> <!--row-->
 	</div>
 
 

@@ -16,18 +16,26 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 	/** Set the height of the map div.
 */
 	function setMapDivHeight() {
-		var topNavBar, mapDiv, desiredHeight;
+		var topNavBar, mapDiv, desiredHeight, sidebarDiv;
 
 		topNavBar = document.getElementById("topNavBar");
 		mapDiv = document.getElementById("map");
+		sidebarDiv = document.getElementById("sidebar");
 
 		desiredHeight = window.innerHeight - topNavBar.clientHeight - 40;
+		desiredHeight = [desiredHeight, "px"].join("");
 
-		mapDiv.style.height = [desiredHeight, "px"].join("");
+		mapDiv.style.height = desiredHeight;
+		sidebarDiv.style.height = desiredHeight;
 
-		//if (map) {
-		//	map.resize();
-		//}
+		var tabPanes = document.querySelectorAll(".tab-pane");
+
+		desiredHeight = window.innerHeight - topNavBar.clientHeight - 80;
+		desiredHeight = [desiredHeight, "px"].join("");
+
+		for (var i = 0, l = tabPanes.length; i < l; i += 1) {
+			tabPanes[i].style.height = desiredHeight;
+		}
 	}
 
 	setMapDivHeight();

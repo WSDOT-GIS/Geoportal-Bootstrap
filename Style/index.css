@@ -1,5 +1,5 @@
 ﻿html, body {
-	overflow: hidden;
+	overflow-x: hidden;
 	height: 100%;
 	/*font-family: 'Helevetica Black', Helvetica, Arial, 'DejaVu Sans', 'Liberation Sans', Freesans, sans-serif*/
 }
@@ -21,15 +21,30 @@ body {
 	padding-bottom: 0;*/
 }
 
+#tools {
+	position: absolute;
+	top: 1em;
+	right: 2em;
+	z-index: 1;
+}
+
+.tab-content {
+	overflow-y: auto;
+}
+
 .navbar-inverse {
 	background-image: none;
 	background-color: #007c66; /*Pantone 335*/
 }
 
-	.navbar-inverse .navbar-brand {
-		color: white;
-		/*padding-left: 3em;*/
-	}
+.navbar-inverse .navbar-brand {
+	color: white;
+	/*padding-left: 3em;*/
+}
+
+.wsdot-logo {
+	float:left;
+}
 
 @media only screen and (max-width : 767px) {
 	.wsdot-logo {
@@ -88,24 +103,24 @@ body {
 	}
 
 	.row-offcanvas-right .sidebar-offcanvas {
-		right: -50%; /* 6 columns */
+		right: -75%; /* 9 columns */
 	}
 
 	.row-offcanvas-left .sidebar-offcanvas {
-		left: -50%; /* 6 columns */
+		left: -75%; /* 9 columns */
 	}
 
 	.row-offcanvas-right.active {
-		right: 50%; /* 6 columns */
+		right: 75%; /* 9 columns */
 	}
 
 	.row-offcanvas-left.active {
-		left: 50%; /* 6 columns */
+		left: 75%; /* 9 columns */
 	}
 
 	.sidebar-offcanvas {
 		position: absolute;
 		top: 0;
-		width: 50%; /* 6 columns */
+		width: 75%; /* 9 columns */
 	}
 }

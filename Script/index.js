@@ -70,8 +70,12 @@ require([
 
 	// Setup layer list
 	(function () {
-
+		/** Creates the layer options div.
+		 * @param {esri/layers/Layer} layer
+		 * @returns {HTMLDivElement}
+		 */
 		function createLayerOptions(layer) {
+
 			/*
 			<div class="layer-options">
 				<label>opacity</label> <input type="range" min="0" max="1" step="0.1" value="1" />
@@ -95,12 +99,14 @@ require([
 				layer.setOpacity(slider.value);
 			};
 
-
-
-
 			return div;
 		}
 
+		/**
+		 * Creates the link to toggle the layer options div's visiblitly.
+		 * @param {HTMLDivElement} optionsDiv - The div that will have it's visibility controlled by this link.
+		 * @returns {HTMLAnchorElement}
+		 */
 		function createOptionsToggleLink(optionsDiv) {
 			var link, span;
 			if (!optionsDiv) {
@@ -113,7 +119,7 @@ require([
 			span.classList.add("glyphicon-collapse-up");
 			link.appendChild(span);
 
-			link.addEventListener("click", function () {
+			link.onclick =  function () {
 				if (span.classList.contains("glyphicon-collapse-up")) {
 					span.classList.remove("glyphicon-collapse-up");
 					span.classList.add("glyphicon-collapse-down");
@@ -124,12 +130,73 @@ require([
 					optionsDiv.classList.remove("hidden");
 				}
 				return false;
-			});
+			};
 
 			return link;
 		}
 
+		function createListItem(layerInfos, id) {
+			var layerInfo = layerInfos[id], li, ul;
+			if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) {
+				ul = document.createElement("ul");
+				ul.classList.add("list-group");
+				layerInfo.forEach(function (layerId) {
+					var subli = createListItem(layerInfos, layerId);
+					ul.appendChild(subli);
+				});
+			}
+			li = document.createElement("li");
+			li.classList.add("list-group-item");
+			var label = document.createElement("label");
+			var checkbox = document.createElement("input");
+			checkbox.type = "checkbox";
+			checkbox.value = layerInfo.defaultVisibility;
+			label.appendChild(checkbox);
+			// label.textContent = layerInfo.name;
+			var labelText = document.createElement("span");
+			labelText.textContent = layerInfo.name;
+			label.appendChild(labelText);
+			li.appendChild(label);
+			if (ul) {
+				li.appendChild(ul);
+			}
+			return li;
+		}
+
 		/**
+		 * Creates a div with sublayer list.
+		 * @param {esri/layers/Layer} layer
+		 * @returns {HTMLDivElement}
+		 */
+		function createSublayerDiv(layer) {
+			var div = null, ul, applyButton;
+			if (layer.layerInfos) {
+				div = document.createElement("div");
+				div.setAttribute("class", "well sublayer-list");
+				ul = document.createElement("ul");
+				ul.classList.add("list-group");
+
+				layer.layerInfos.forEach(function (layerInfo) {
+					/*jshint eqnull:true*/
+					if (layerInfo.parentLayerId < 0) {
+						ul.appendChild(createListItem(layer.layerInfos, layerInfo.id));
+					}
+					/*jshint eqnull:false*/
+				});
+				div.appendChild(ul);
+				applyButton = document.createElement("button");
+				applyButton.type = "button";
+				applyButton.innerText = "Apply";
+				applyButton.classList.add("btn");
+				div.appendChild(applyButton);
+
+			}
+
+			return div;
+		}
+
+		/** Toggles a layers visibility.
+		 * The first time the checkbox is checked, the corresponding layer will be created and added to the map.
 		 * @param {Event} e
 		 * @this {HTMLInputElement} - The clicked checkbox.
 		 */
@@ -167,6 +234,8 @@ require([
 							var link = createOptionsToggleLink(optionsDiv);
 							checkboxLabel.appendChild(link);
 							listItem.appendChild(optionsDiv);
+							var sublayerDiv = createSublayerDiv(layer);
+							optionsDiv.appendChild(sublayerDiv);
 						});
 					}
 				}

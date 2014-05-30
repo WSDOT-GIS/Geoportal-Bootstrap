@@ -1,5 +1,12 @@
 ﻿/*global require*/
-require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/domReady!"], function (Map, Legend, BasemapGallery) {
+require([
+	"esri/map",
+	"esri/dijit/Legend",
+	"esri/dijit/BasemapGallery",
+	"esri/layers/ArcGISTiledMapServiceLayer",
+	"esri/layers/ArcGISDynamicMapServiceLayer",
+	"dojo/domReady!"
+], function (Map, Legend, BasemapGallery, ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer) {
 	"use strict";
 
 	$('#tabs a').click(function (e) {
@@ -60,4 +67,52 @@ require(["esri/map", "esri/dijit/Legend", "esri/dijit/BasemapGallery", "dojo/dom
 
 	legend = new Legend({ map: map }, "legendWidget");
 	legend.startup();
+
+	// Setup layer list
+	(function () {
+
+		/**
+		 * @param {Event} e
+		 * @this {HTMLInputElement} - The clicked checkbox.
+		 */
+		function toggleLayer(e) {
+			var checkbox, layerId, layer;
+			checkbox = e.currentTarget;
+			layerId = checkbox.dataset.layerId;
+			layer = map.getLayer(layerId);
+			if (layer) {
+				if (checkbox.checked) {
+					layer.show();
+				} else {
+					layer.hide();
+				}
+			} else {
+				if (checkbox.checked) {
+					// Create the layer and add it to the map.
+					if (checkbox.dataset.layerType === "ArcGISTiledMapService") {
+						layer = new ArcGISTiledMapServiceLayer(checkbox.dataset.url, {
+							id: checkbox.dataset.layerId
+						});
+					} else if (checkbox.dataset.layerType === "ArcGISTiledMapService") {
+						layer = new ArcGISDynamicMapServiceLayer(checkbox.dataset.url, {
+							id: checkbox.dataset.layerId
+						});
+					}
+					if (layer) {
+						map.addLayer(layer);
+					}
+				}
+			}
+		}
+
+		var layerListDiv, checkboxes, checkbox;
+
+		layerListDiv = document.getElementById("layerList");
+		checkboxes = layerListDiv.querySelectorAll("[type='checkbox']");
+		// Attach click event handler to checkboxes.
+		for (var i = 0, l = checkboxes.length; i < l; i += 1) {
+			checkbox = checkboxes[i];
+			checkbox.addEventListener("click", toggleLayer);
+		}
+	}());
 });

@@ -71,13 +71,75 @@ require([
 	// Setup layer list
 	(function () {
 
+		function createLayerOptions(layer) {
+			/*
+			<div class="layer-options">
+				<label>opacity</label> <input type="range" min="0" max="1" step="0.1" value="1" />
+			</div>
+			 */
+			var div = document.createElement("div");
+			div.classList.add("layer-options");
+			div.classList.add("well");
+			var label = document.createElement("label");
+			label.textContent = "Opacity";
+			var slider = document.createElement("input");
+			slider.type = "range";
+			slider.min = 0;
+			slider.max = 1;
+			slider.step = 0.1;
+			slider.value = layer.opacity;
+			div.appendChild(label);
+			div.appendChild(slider);
+
+			slider.onchange = function () {
+				layer.setOpacity(slider.value);
+			};
+
+
+
+
+			return div;
+		}
+
+		function createOptionsToggleLink(optionsDiv) {
+			var link, span;
+			if (!optionsDiv) {
+				throw new TypeError("Options div was not provided.");
+			}
+			link = document.createElement("a");
+			link.href = "#";
+			span = document.createElement("span");
+			span.classList.add("glyphicon");
+			span.classList.add("glyphicon-collapse-up");
+			link.appendChild(span);
+
+			link.addEventListener("click", function () {
+				if (span.classList.contains("glyphicon-collapse-up")) {
+					span.classList.remove("glyphicon-collapse-up");
+					span.classList.add("glyphicon-collapse-down");
+					optionsDiv.classList.add("hidden");
+				} else {
+					span.classList.remove("glyphicon-collapse-down");
+					span.classList.add("glyphicon-collapse-up");
+					optionsDiv.classList.remove("hidden");
+				}
+				return false;
+			});
+
+			return link;
+		}
+
 		/**
 		 * @param {Event} e
 		 * @this {HTMLInputElement} - The clicked checkbox.
 		 */
 		function toggleLayer(e) {
-			var checkbox, layerId, layer;
+			var checkbox, layerId, layer, listItem, checkboxLabel;
 			checkbox = e.currentTarget;
+			checkboxLabel = checkbox.parentElement;
+			// Get the li that contains the checkbox.
+			listItem = checkboxLabel.parentElement;
+
 			layerId = checkbox.dataset.layerId;
 			layer = map.getLayer(layerId);
 			if (layer) {
@@ -100,6 +162,12 @@ require([
 					}
 					if (layer) {
 						map.addLayer(layer);
+						layer.on("load", function () {
+							var optionsDiv = createLayerOptions(layer);
+							var link = createOptionsToggleLink(optionsDiv);
+							checkboxLabel.appendChild(link);
+							listItem.appendChild(optionsDiv);
+						});
 					}
 				}
 			}

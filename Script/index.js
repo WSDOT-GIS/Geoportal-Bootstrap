@@ -150,7 +150,9 @@ require([
 			var label = document.createElement("label");
 			var checkbox = document.createElement("input");
 			checkbox.type = "checkbox";
-			checkbox.value = layerInfo.defaultVisibility;
+			checkbox.checked = layerInfo.defaultVisibility;
+			//checkbox.dataset.layerId = id;
+			checkbox.value = id;
 			label.appendChild(checkbox);
 			// label.textContent = layerInfo.name;
 			var labelText = document.createElement("span");
@@ -230,12 +232,19 @@ require([
 					if (layer) {
 						map.addLayer(layer);
 						layer.on("load", function () {
-							var optionsDiv = createLayerOptions(layer);
-							var link = createOptionsToggleLink(optionsDiv);
+							// Add the layer options section.
+							var optionsDiv, link, sublayerLabel, sublayerDiv;
+							optionsDiv = createLayerOptions(layer);
+							link = createOptionsToggleLink(optionsDiv);
 							checkboxLabel.appendChild(link);
-							listItem.appendChild(optionsDiv);
-							var sublayerDiv = createSublayerDiv(layer);
-							optionsDiv.appendChild(sublayerDiv);
+							sublayerLabel = document.createElement("label");
+							sublayerLabel.innerText = "Sublayers";
+							optionsDiv.appendChild(sublayerLabel);
+							sublayerDiv = createSublayerDiv(layer);
+							if (sublayerDiv) {
+								optionsDiv.appendChild(sublayerDiv);
+								listItem.appendChild(optionsDiv);
+							}
 						});
 					}
 				}
@@ -251,5 +260,5 @@ require([
 			checkbox = checkboxes[i];
 			checkbox.addEventListener("click", toggleLayer);
 		}
-	}());
+	}()); // End setup layer list.
 });

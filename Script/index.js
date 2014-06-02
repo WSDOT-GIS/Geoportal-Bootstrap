@@ -137,22 +137,30 @@ require([
 
 		function createListItem(layerInfos, id) {
 			var layerInfo = layerInfos[id], li, ul;
+			// Create the output list item.
+			li = document.createElement("li");
+			// Add class for bootstrap styling.
+			li.classList.add("list-group-item");
+			// Add sublayer lists.
+			// Set data-has-sublayers.
 			if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) {
 				ul = document.createElement("ul");
+				// Add class for bootstrap styling.
 				ul.classList.add("list-group");
+				// For each child layer id, make a recursive call to this function.
 				layerInfo.forEach(function (layerId) {
 					var subli = createListItem(layerInfos, layerId);
 					ul.appendChild(subli);
 				});
 			}
-			li = document.createElement("li");
-			li.classList.add("list-group-item");
 			var label = document.createElement("label");
 			var checkbox = document.createElement("input");
 			checkbox.type = "checkbox";
 			checkbox.checked = layerInfo.defaultVisibility;
 			//checkbox.dataset.layerId = id;
 			checkbox.value = id;
+			checkbox.dataset.subLayerIds = layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "";
+			checkbox.dataset.parentLayerId = layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId;
 			label.appendChild(checkbox);
 			// label.textContent = layerInfo.name;
 			var labelText = document.createElement("span");
@@ -172,7 +180,10 @@ require([
 		 */
 		function createSublayerDiv(layer) {
 			var div = null, ul, applyButton;
-			if (layer.layerInfos) {
+
+
+
+			if (layer.setVisibleLayers && layer.layerInfos) {
 				div = document.createElement("div");
 				div.setAttribute("class", "well sublayer-list");
 				ul = document.createElement("ul");
@@ -192,6 +203,16 @@ require([
 				applyButton.classList.add("btn");
 				div.appendChild(applyButton);
 
+				applyButton.onclick = function () {
+					// Select all checked checkboxes without a sublayer ID.
+					var checkboxes = ul.querySelectorAll("input[data-sub-layer-ids='']:checked");
+					// Get the sublayer IDs.
+					var sublayers = [];
+					for (var i = 0, l = checkboxes.length; i < l; i += 1) {
+						sublayers.push(parseInt(checkboxes[i].value, 10));
+					}
+					layer.setVisibleLayers(sublayers);
+				};
 			}
 
 			return div;
@@ -237,14 +258,14 @@ require([
 							optionsDiv = createLayerOptions(layer);
 							link = createOptionsToggleLink(optionsDiv);
 							checkboxLabel.appendChild(link);
-							sublayerLabel = document.createElement("label");
-							sublayerLabel.innerText = "Sublayers";
-							optionsDiv.appendChild(sublayerLabel);
 							sublayerDiv = createSublayerDiv(layer);
 							if (sublayerDiv) {
+								sublayerLabel = document.createElement("label");
+								sublayerLabel.innerText = "Sublayers";
+								optionsDiv.appendChild(sublayerLabel);
 								optionsDiv.appendChild(sublayerDiv);
-								listItem.appendChild(optionsDiv);
 							}
+							listItem.appendChild(optionsDiv);
 						});
 					}
 				}

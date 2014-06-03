@@ -211,6 +211,9 @@ require([
 					for (var i = 0, l = checkboxes.length; i < l; i += 1) {
 						sublayers.push(parseInt(checkboxes[i].value, 10));
 					}
+					if (sublayers.length < 1) {
+						sublayers.push(-1);
+					}
 					layer.setVisibleLayers(sublayers);
 				};
 			}
@@ -241,11 +244,11 @@ require([
 			} else {
 				if (checkbox.checked) {
 					// Create the layer and add it to the map.
-					if (checkbox.dataset.layerType === "ArcGISTiledMapService") {
+					if (checkbox.dataset.layerType === "ArcGISTiledMapServiceLayer") {
 						layer = new ArcGISTiledMapServiceLayer(checkbox.dataset.url, {
 							id: checkbox.dataset.layerId
 						});
-					} else if (checkbox.dataset.layerType === "ArcGISTiledMapService") {
+					} else if (checkbox.dataset.layerType === "ArcGISDynamicMapServiceLayer") {
 						layer = new ArcGISDynamicMapServiceLayer(checkbox.dataset.url, {
 							id: checkbox.dataset.layerId
 						});

@@ -21,6 +21,13 @@ body {
 	padding-bottom: 0;*/
 }
 
+#progressBar {
+	z-index: 1;
+	position: absolute;
+	bottom: calc(50%);
+	left: calc(50%);
+}
+
 #tools {
 	position: absolute;
 	top: 1em;

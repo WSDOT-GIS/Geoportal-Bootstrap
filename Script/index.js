@@ -65,6 +65,14 @@ require([
 		basemapGallery.startup();
 	});
 
+	map.on("update-start", function () {
+		document.getElementById("progressBar").hidden = false;
+	});
+
+	map.on("update-end", function () {
+		document.getElementById("progressBar").hidden = true;
+	});
+
 	legend = new Legend({ map: map }, "legendWidget");
 	legend.startup();
 

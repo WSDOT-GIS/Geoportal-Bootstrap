@@ -135,6 +135,26 @@ require([
 			return link;
 		}
 
+		/** Applies the `checked` value of the current checkbox
+		 * to nested checkboxes.
+		 * @param {Event} e
+		 */
+		function checkNestedCheckboxes(e) {
+			// Get the checkbox that triggered the event.
+			// li > label > input[type='checkbox']
+			var currentCheckbox = e.currentTarget;
+			// Get the list item that hosts the checkbox.
+			var listItem = currentCheckbox.parentElement.parentElement;
+			// Get a NodeList of child checkboxes.
+			// li > ul > li input[type='checkbox']
+			var subCheckboxes = listItem.querySelectorAll("ul > li input[type='checkbox']");
+
+			for (var i = 0, l = subCheckboxes.length; i < l; i += 1) {
+				subCheckboxes[i].checked = currentCheckbox.checked;
+			}
+
+		}
+
 		function createListItem(layerInfos, id) {
 			var layerInfo = layerInfos[id], li, ul;
 			// Create the output list item.
@@ -148,7 +168,7 @@ require([
 				// Add class for bootstrap styling.
 				ul.classList.add("list-group");
 				// For each child layer id, make a recursive call to this function.
-				layerInfo.forEach(function (layerId) {
+				layerInfo.subLayerIds.forEach(function (layerId) {
 					var subli = createListItem(layerInfos, layerId);
 					ul.appendChild(subli);
 				});
@@ -161,6 +181,9 @@ require([
 			checkbox.value = id;
 			checkbox.dataset.subLayerIds = layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "";
 			checkbox.dataset.parentLayerId = layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId;
+			if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) {
+				checkbox.onchange = checkNestedCheckboxes;
+			}
 			label.appendChild(checkbox);
 			// label.textContent = layerInfo.name;
 			var labelText = document.createElement("span");
@@ -180,8 +203,6 @@ require([
 		 */
 		function createSublayerDiv(layer) {
 			var div = null, ul, applyButton;
-
-
 
 			if (layer.setVisibleLayers && layer.layerInfos) {
 				div = document.createElement("div");
@@ -205,12 +226,15 @@ require([
 
 				applyButton.onclick = function () {
 					// Select all checked checkboxes without a sublayer ID.
-					var checkboxes = ul.querySelectorAll("input[data-sub-layer-ids='']:checked");
+					////var checkboxes = ul.querySelectorAll("input[data-sub-layer-ids='']:checked");
+					var checkboxes = ul.querySelectorAll("input[type='checkbox']:checked");
 					// Get the sublayer IDs.
 					var sublayers = [];
 					for (var i = 0, l = checkboxes.length; i < l; i += 1) {
 						sublayers.push(parseInt(checkboxes[i].value, 10));
 					}
+					// If the list of sublayer IDs is empty, add -1.
+					// This is how you indicate "no sublayers".
 					if (sublayers.length < 1) {
 						sublayers.push(-1);
 					}

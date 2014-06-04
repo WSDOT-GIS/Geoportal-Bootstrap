@@ -155,8 +155,9 @@ define([
 				div.appendChild(ul);
 				applyButton = document.createElement("button");
 				applyButton.type = "button";
-				applyButton.innerText = "Apply";
+				applyButton.appendChild(document.createTextNode("Apply"));
 				applyButton.classList.add("btn");
+				applyButton.classList.add("btn-primary");
 				div.appendChild(applyButton);
 
 				applyButton.onclick = function () {

@@ -1,0 +1,16 @@
+﻿{
+	"operationalLayers":  [
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CityLimits/MapServer",
+			"type": "ArcGISTiledMapServiceLayer",
+			"id": "city_limits",
+			"title":  "City Limits"
+		},
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CongressionalDistricts/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id": "congressional_districts",
+			"title": "Congressional Districts"
+		}
+	]
+}

@@ -54,30 +54,7 @@
 							<div id="basemapGallery" class="claro"></div>
 						</div>
 						<div class="tab-pane" id="layers">
-							<!-- Start Layer List-->
-							<div id="layerList">
-								<ul class="list-group">
-									<li class="list-group-item">
-										<label>
-											<input type="checkbox" 
-												   data-url="http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CityLimits/MapServer"
-												   data-layer-type="ArcGISTiledMapServiceLayer"
-												   data-layer-id="citylimits"
-												    />City Limits
-										</label>
-									</li>
-									<li class="list-group-item">
-										<label>
-											<input type="checkbox"
-												   data-url="http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CongressionalDistricts/MapServer"
-												   data-layer-type="ArcGISDynamicMapServiceLayer"
-												   data-layer-id="congressionalDistricts" />
-											Congressional Districts
-										</label>
-									</li>
-								</ul>
-							</div>
-							<!-- End Layer List-->
+
 						</div>
 					</div>
 				</div>
@@ -88,6 +65,17 @@
 
 	<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<script>
+		var dojoConfig = {
+			packages: [
+				{
+					"name": "layerList",
+					"location": "/Script",
+					"main": "layer-list"
+				}
+			]
+		}
+	</script>
 	<script src="//js.arcgis.com/3.9compact/"></script>
 	<script src="Script/index.js"></script>
 </body>

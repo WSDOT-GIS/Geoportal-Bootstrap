@@ -5,9 +5,12 @@ require([
 	"esri/dijit/Legend",
 	"esri/dijit/BasemapGallery",
 	"layerList",
+	"dojo/text!./configurations/default.json",
 	"dojo/domReady!"
-], function (require, Map, Legend, BasemapGallery, LayerList) {
+], function (require, Map, Legend, BasemapGallery, LayerList, config) {
 	"use strict";
+
+	config = JSON.parse(config);
 
 	$('#tabs a').click(function (e) {
 		e.preventDefault();
@@ -18,7 +21,7 @@ require([
 		$(".row-offcanvas").toggleClass('active');
 	});
 
-	var map, legend;
+	var map, legend, layerList;
 
 	/** Set the height of the map div.
 */
@@ -76,20 +79,7 @@ require([
 	legend = new Legend({ map: map }, "legendWidget");
 	legend.startup();
 
-	var layerList = LayerList.createLayerList(map, [
-		{
-			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CityLimits/MapServer",
-			"type": "ArcGISTiledMapServiceLayer",
-			"id": "city_limits",
-			"title": "City Limits"
-		},
-		{
-			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CongressionalDistricts/MapServer",
-			"type": "ArcGISDynamicMapServiceLayer",
-			"id": "congressional_districts",
-			"title": "Congressional Districts"
-		}
-	]);
+	layerList = LayerList.createLayerList(map, config.operationalLayers);
 
 	document.getElementById("layers").appendChild(layerList);
 

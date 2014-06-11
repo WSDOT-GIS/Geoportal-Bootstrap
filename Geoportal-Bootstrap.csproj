@@ -72,7 +72,9 @@
     <Content Include="Script\index.js" />
     <Content Include="Script\layer-list.js" />
     <Content Include="Style\index.css" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

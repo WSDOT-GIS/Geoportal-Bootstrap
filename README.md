@@ -8,4 +8,4 @@ Should work with the latest versions of
 * Chrome
 * Firefox
 * Internet Explorer
-    * Does not work with IE 10 or lower. IE 11 or higher required.
+    * IE 11 or higher required due to use of `dataset` property on HTML elements.

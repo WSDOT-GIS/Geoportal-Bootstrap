@@ -45,6 +45,7 @@
 						<li class="active"><a href="#legend"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
 						<li><a href="#basemaps"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
 						<li><a href="#layers"><span class="glyphicon glyphicon-list"></span> Layers</a></li>
+						<li><a href="#elc"><span class="glyphicon glyphicon-road"></span></a></li>
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="legend">
@@ -55,6 +56,110 @@
 						</div>
 						<div class="tab-pane" id="layers">
 
+						</div>
+						<div class="tab-pane" id="elc">
+							<div class="panel-group" id="elcAccordion">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#elcAccordion" href="#findRouteLocationPanel">
+												Find Route Location
+											</a>
+										</h4>
+									</div>
+									<div id="findRouteLocationPanel" class="panel-collapse collapse in">
+										<div class="panel-body">
+											<form id="findRouteLocation" role="form">
+												<!-- Route -->
+												<div class="form-group">
+													<label for="routeBox">Route</label>
+													<div class="input-group">
+														<input id="routeBox" name="route" list="routeList" type="text" class="form-control" placeholder="Enter a Route ID." required="required" />
+														<label class="input-group-addon"for="decreaseCheckbox"><input id="decreaseCheckbox" type="checkbox" /> Decrease</label>
+													</div>
+													<datalist id="routeList">
+														<!-- List of valid routes -->
+													</datalist>
+												</div>
+												<!-- Milepost type -->
+												<div class="form-group">
+													<label>Milepost Type</label>
+													<label class="radio-inline"><input type="radio" name="mp-type" checked="checked" value="SRMP" />SRMP</label>
+													<label class="radio-inline"><input type="radio" name="mp-type" value="ARM" />ARM</label>
+												</div>
+
+												<div class="form-group">
+													<label>Geometry Type</label>
+													<label class ="radio-inline"><input type="radio" name="geometry-type" value="point" checked="checked" />Point</label>
+													<label class="radio-inline"><input type="radio" name="geometry-type" value="line" />Line</label>
+												</div>
+
+												<div class="form-group">
+													<label>Reference Date</label>
+													<input type="date" class="form-control" required="required" />
+												</div>
+
+												<div class="form-group">
+													<label><span class="line-only">Start </span>Milepost</label>
+													<div class="input-group">
+														<input type="number" class="form-control" min="0" step="0.001" required="required" />
+														<label class="input-group-addon srmp-only"><input type="checkbox" /> Back</label>
+													</div>
+												</div>
+
+												<div class="form-group line-only">
+													<label>End Milepost</label>
+													<div class="input-group">
+														<input type="number" class="form-control" min="0" step="0.001" />
+														<label class="input-group-addon srmp-only"><input type="checkbox" /> Back</label>
+													</div>
+												</div>
+
+												<div class="btn-group btn-group-justified">
+													<div class="btn-group">
+														<button type="submit" class="btn btn-primary">Find</button>
+													</div>
+													<div class="btn-group">
+														<button type="reset" class="btn btn-danger">Reset</button>
+													</div>
+												</div>
+
+											</form>
+										</div>
+									</div>
+								</div>
+
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#elcAccordion" href="#findNearestRouteLocationPanel">
+												Find Nearest Route Location
+											</a>
+										</h4>
+									</div>
+									<div id="findNearestRouteLocationPanel" class="panel-collapse collapse">
+										<div class="panel-body">
+											<form id="findNearestRouteLocation" role="form">
+												<div class="form-group">
+													<label>Radius</label>
+													<div class="input-group">
+														<input type="number" class="form-control" />
+														<span class="input-group-addon">Feet</span>
+													</div>
+												</div>
+												<div class="btn-group btn-group-justified">
+													<div class="btn-group">
+														<button type="submit" class="btn btn-primary">Find</button>
+													</div>
+													<div class="btn-group">
+														<button type="reset" class="btn btn-danger">Reset</button>
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

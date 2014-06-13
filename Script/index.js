@@ -190,5 +190,56 @@
 
 		document.getElementById("layers").appendChild(layerList);
 
+		// Setup ELC controls
+		(function () {
+			var findRouteLocationForm = document.forms.findRouteLocation, findNearestRouteLocationForm = document.forms.findNearestRouteLocation;
+
+			var mpTypeRadios = findRouteLocationForm["mp-type"];
+			var gTypeRadios = findRouteLocationForm["geometry-type"];
+
+			function setFormMPType() {
+				var mpType = findRouteLocationForm["mp-type"].value;
+				findRouteLocationForm.dataset.mpType = mpType;
+			}
+
+			function setGeometryType() {
+				var gType = findRouteLocationForm["geometry-type"].value;
+				findRouteLocationForm.dataset.geometryType = gType;
+			}
+
+			setFormMPType();
+			setGeometryType();
+
+			// Setup click events for radio buttons.
+			var i, l;
+
+			for (i = 0, l = mpTypeRadios.length; i < l; i += 1) {
+				mpTypeRadios[i].onchange = setFormMPType;
+			}
+
+			for (i = 0, l = gTypeRadios.length; i < l; i += 1) {
+				gTypeRadios[i].onchange = setGeometryType;
+			}
+
+			findRouteLocationForm.onsubmit = function () {
+				return false;
+			};
+
+			// Add an event handler for reset.
+			// Set the radio buttons to their default values and then trigger their onchange events.
+			// If this event handler is not added the user must click reset twice before everything is reset.
+			findRouteLocationForm.addEventListener("reset", function () {
+				var defaultRadios = this.querySelectorAll("[value='SRMP'],[value='point']");
+				for (var i = 0, l = defaultRadios.length; i < l; i += 1) {
+					defaultRadios[i].checked = true;
+					defaultRadios[i].onchange();
+				}
+			});
+
+			findNearestRouteLocationForm.onsubmit = function () {
+				return false;
+			};
+		}());
+
 	});
 }());

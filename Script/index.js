@@ -27,9 +27,10 @@
 		"esri/dijit/Legend",
 		"esri/dijit/BasemapGallery",
 		"layerList",
+		"elc",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, Map, Legend, BasemapGallery, LayerList, config) {
+	], function (require, Map, Legend, BasemapGallery, LayerList, Elc, config) {
 		"use strict";
 
 		config = JSON.parse(config);
@@ -192,6 +193,7 @@
 
 		// Setup ELC controls
 		(function () {
+			var elc = new Elc.RouteLocator();
 			var findRouteLocationForm = document.forms.findRouteLocation, findNearestRouteLocationForm = document.forms.findNearestRouteLocation;
 
 			var mpTypeRadios = findRouteLocationForm["mp-type"];
@@ -206,6 +208,23 @@
 				var gType = findRouteLocationForm["geometry-type"].value;
 				findRouteLocationForm.dataset.geometryType = gType;
 			}
+
+			elc.getRouteList(function (routeList) {
+				console.log("routeList", routeList);
+				var routeListElement, docFrag;
+				if (routeList && routeList.Current && routeList.Current.length) {
+					routeListElement = document.getElementById("routeList");
+					docFrag = document.createDocumentFragment();
+					routeList.Current.forEach(function (/**{Elc.Route}*/ route) {
+						var option = document.createElement("option");
+						option.value = route.name;
+						docFrag.appendChild(option);
+					});
+					routeListElement.appendChild(docFrag);
+				}
+			}, function (error) {
+				console.error("Error loading route list", error);
+			}, true);
 
 			setFormMPType();
 			setGeometryType();
@@ -222,6 +241,8 @@
 			}
 
 			findRouteLocationForm.onsubmit = function () {
+
+				// Return false to prevent the page from reloading.
 				return false;
 			};
 
@@ -237,6 +258,8 @@
 			});
 
 			findNearestRouteLocationForm.onsubmit = function () {
+
+				// Return false to prevent the page from reloading.
 				return false;
 			};
 		}());

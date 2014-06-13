@@ -4,6 +4,12 @@ define([
 	"esri/layers/ArcGISDynamicMapServiceLayer"
 ], function (ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer) {
 
+	(function () {
+		if (!document.createElement("div").dataset) {
+			console.error("The dataset property is not supported by this browser.");
+		}
+	}());
+
 	function createLayerList(map, layerDefinitions) {
 		/** Creates the layer options div.
 		* @param {esri/layers/Layer} layer
@@ -187,7 +193,7 @@ define([
 			* @this {HTMLInputElement} - The clicked checkbox.
 			*/
 		function toggleLayer(e) {
-			var checkbox, layerId, layer, listItem, checkboxLabel;
+			var checkbox, layerId, layer, listItem, checkboxLabel, progress;
 			checkbox = e.currentTarget;
 			checkboxLabel = checkbox.parentElement;
 			// Get the li that contains the checkbox.
@@ -204,6 +210,11 @@ define([
 			} else {
 				if (checkbox.checked) {
 					// Create the layer and add it to the map.
+
+					progress = document.createElement("progress");
+					checkbox.disabled = true;
+					listItem.appendChild(progress);
+					
 					if (checkbox.dataset.layerType === "ArcGISTiledMapServiceLayer") {
 						layer = new ArcGISTiledMapServiceLayer(checkbox.dataset.url, {
 							id: checkbox.dataset.layerId
@@ -213,13 +224,17 @@ define([
 							id: checkbox.dataset.layerId
 						});
 					}
+					
 					if (layer) {
 						map.addLayer(layer);
 						layer.on("load", function () {
+							checkbox.disabled = false;
+							listItem.removeChild(progress);
 							// Add the layer options section.
 							var optionsDiv, link, sublayerLabel, sublayerDiv;
 							optionsDiv = createLayerOptions(layer);
 							link = createOptionsToggleLink(optionsDiv);
+							checkboxLabel.appendChild(document.createTextNode(" "));
 							checkboxLabel.appendChild(link);
 							sublayerDiv = createSublayerDiv(layer);
 							if (sublayerDiv) {
@@ -229,6 +244,13 @@ define([
 								optionsDiv.appendChild(sublayerDiv);
 							}
 							listItem.appendChild(optionsDiv);
+						});
+						layer.on("error", function (error) {
+							listItem.removeChild(progress);
+							checkbox.checked = false;
+							console.error(error);
+							layer = null;
+							listItem.classList.add("bg-danger");
 						});
 					}
 				}

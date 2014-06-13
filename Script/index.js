@@ -200,17 +200,16 @@
 			var gTypeRadios = findRouteLocationForm["geometry-type"];
 
 			function setFormMPType() {
-				var mpType = findRouteLocationForm["mp-type"].value;
+				var mpType = findRouteLocationForm.querySelector("[name='mp-type']:checked").value;
 				findRouteLocationForm.dataset.mpType = mpType;
 			}
 
 			function setGeometryType() {
-				var gType = findRouteLocationForm["geometry-type"].value;
+				var gType = findRouteLocationForm.querySelector("[name='geometry-type']:checked").value;
 				findRouteLocationForm.dataset.geometryType = gType;
 			}
 
 			elc.getRouteList(function (routeList) {
-				console.log("routeList", routeList);
 				var routeListElement, docFrag;
 				if (routeList && routeList.Current && routeList.Current.length) {
 					routeListElement = document.getElementById("routeList");
@@ -242,6 +241,32 @@
 
 			findRouteLocationForm.onsubmit = function () {
 
+				var routeLocation, mpType, form = this, milepost, gType, endMP, isSrmp;
+
+				mpType = form["mp-type"].value;
+				gType = form["geometry-type"].value;
+				milepost = parseFloat(form.milepost.value);
+				isSrmp = mpType === "SRMP";
+
+				routeLocation = new Elc.RouteLocation({
+					Route: form.route.value,
+					Arm: !isSrmp ? milepost : null,
+					Srmp: isSrmp ? milepost : null,
+					Back: isSrmp ? form["is-back"].checked : null
+				});
+
+				if (gType === "line") {
+					endMP = parseFloat(form["end-milepost"].value);
+					if (isSrmp) {
+						routeLocation.EndSrmp = endMP;
+						routeLocation.EndBack = form["end-is-back"].checked;
+					} else {
+						routeLocation.EndArm = endMP;
+					}
+				}
+
+				console.log(routeLocation);
+
 				// Return false to prevent the page from reloading.
 				return false;
 			};
@@ -258,6 +283,7 @@
 			});
 
 			findNearestRouteLocationForm.onsubmit = function () {
+
 
 				// Return false to prevent the page from reloading.
 				return false;

@@ -11,6 +11,12 @@
 			"type": "ArcGISDynamicMapServiceLayer",
 			"id": "congressional_districts",
 			"title": "Congressional Districts"
+		},
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/FerryRoutes/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id": "ferry_routes",
+			"title":  "Ferry Routes"
 		}
 	]
 }

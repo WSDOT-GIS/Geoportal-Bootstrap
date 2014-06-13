@@ -201,12 +201,24 @@
 
 			function setFormMPType() {
 				var mpType = findRouteLocationForm.querySelector("[name='mp-type']:checked").value;
-				findRouteLocationForm.dataset.mpType = mpType;
+				var mpClass = "mp-type-arm";
+				//findRouteLocationForm.dataset.mpType = mpType;
+				if (mpType === "ARM") {
+					findRouteLocationForm.classList.add(mpClass);
+				} else {
+					findRouteLocationForm.classList.remove(mpClass);
+				}
 			}
 
 			function setGeometryType() {
 				var gType = findRouteLocationForm.querySelector("[name='geometry-type']:checked").value;
-				findRouteLocationForm.dataset.geometryType = gType;
+				var gClass = "geometry-type-point";
+				//findRouteLocationForm.dataset.geometryType = gType;
+				if (gType === "point") {
+					findRouteLocationForm.classList.add(gClass);
+				} else {
+					findRouteLocationForm.classList.remove(gClass);
+				}
 			}
 
 			elc.getRouteList(function (routeList) {

@@ -132,10 +132,10 @@ body {
 	}
 }
 
-#findRouteLocation:not([data-geometry-type='line']) .line-only {
+.geometry-type-point .line-only {
 	display: none;
 }
 
-#findRouteLocation:not([data-mp-type='SRMP']) .srmp-only {
+.mp-type-arm .srmp-only {
 	display: none;
 }

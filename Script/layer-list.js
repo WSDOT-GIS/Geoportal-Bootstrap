@@ -246,7 +246,7 @@ define([
 							listItem.appendChild(optionsDiv);
 						});
 						layer.on("error", function (error) {
-							listItem.removeChild(progress);
+							checkboxLabel.removeChild(progress);
 							checkbox.checked = false;
 							console.error(error);
 							layer = null;

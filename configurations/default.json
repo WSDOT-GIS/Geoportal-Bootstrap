@@ -11,12 +11,6 @@
 			"type": "ArcGISDynamicMapServiceLayer",
 			"id": "congressional_districts",
 			"title": "Congressional Districts"
-		},
-		{
-			"url":  "http://hqolymgis21t/ArcGIS/rest/services/NotReal/DoesntExist/MapServier",
-			"type": "ArcGISDynamicMapServiceLayer",
-			"id":  "fake",
-			"title": "Bad Layer - URL doesn't exist"
 		}
 	]
 }

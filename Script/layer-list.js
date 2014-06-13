@@ -57,17 +57,17 @@ define([
 			link.href = "#";
 			span = document.createElement("span");
 			span.classList.add("glyphicon");
-			span.classList.add("glyphicon-collapse-up");
+			span.classList.add("glyphicon-chevron-up");
 			link.appendChild(span);
 
 			link.onclick = function () {
-				if (span.classList.contains("glyphicon-collapse-up")) {
-					span.classList.remove("glyphicon-collapse-up");
-					span.classList.add("glyphicon-collapse-down");
+				if (span.classList.contains("glyphicon-chevron-up")) {
+					span.classList.remove("glyphicon-chevron-up");
+					span.classList.add("glyphicon-chevron-down");
 					optionsDiv.classList.add("hidden");
 				} else {
-					span.classList.remove("glyphicon-collapse-down");
-					span.classList.add("glyphicon-collapse-up");
+					span.classList.remove("glyphicon-chevron-down");
+					span.classList.add("glyphicon-chevron-up");
 					optionsDiv.classList.remove("hidden");
 				}
 				return false;

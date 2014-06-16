@@ -1,0 +1,37 @@
+﻿{
+	"defaultBasemap": "Topographic",
+	"operationalLayers":  [
+		{
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/FishPassage_20140529/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id":  "fish_passage_barriers",
+			"title":  "Fish Passage Barriers",
+			"visibility": true
+		},
+		{
+			"url": "//fortress.wa.gov/dfw/gispublic/arcgis/rest/services/ApplicationServices/NHD_Hydro_Cache/MapServer",
+			"type": "ArcGISTiledMapServiceLayer",
+			"id": "hydrology",
+			"title": "NHD Hydrology",
+			"visibility": true
+		},
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CityLimits/MapServer",
+			"type": "ArcGISTiledMapServiceLayer",
+			"id": "city_limits",
+			"title":  "City Limits"
+		},
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CongressionalDistricts/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id": "congressional_districts",
+			"title": "Congressional Districts"
+		},
+		{
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/FerryRoutes/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id": "ferry_routes",
+			"title":  "Ferry Routes"
+		}
+	]
+}

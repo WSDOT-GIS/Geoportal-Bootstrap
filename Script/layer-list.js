@@ -195,7 +195,7 @@ define([
 			*/
 		function toggleLayer(e) {
 			var checkbox, layerId, layer, listItem, checkboxLabel, progress;
-			checkbox = this;
+			checkbox = e.target || e.currentTarget;
 			checkboxLabel = checkbox.parentElement;
 			// Get the li that contains the checkbox.
 			listItem = checkboxLabel.parentElement;

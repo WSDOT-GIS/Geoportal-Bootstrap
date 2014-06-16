@@ -202,6 +202,7 @@
 		layerList = LayerList.createLayerList(map, config.operationalLayers);
 		document.getElementById("layers").appendChild(layerList);
 
+		// Check all of the checkboxes that have defaultVisibility data properties set to true.
 		map.on("load", function () {
 			var checkboxes = layerList.querySelectorAll("[data-default-visibility]");
 			if (checkboxes && checkboxes.length) {

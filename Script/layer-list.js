@@ -195,7 +195,7 @@ define([
 			*/
 		function toggleLayer(e) {
 			var checkbox, layerId, layer, listItem, checkboxLabel, progress;
-			checkbox = e.currentTarget;
+			checkbox = this;
 			checkboxLabel = checkbox.parentElement;
 			// Get the li that contains the checkbox.
 			listItem = checkboxLabel.parentElement;
@@ -247,11 +247,7 @@ define([
 							listItem.appendChild(optionsDiv);
 						});
 						layer.on("error", function (error) {
-							checkboxLabel.removeChild(progress);
-							checkbox.checked = false;
 							console.error(error);
-							layer = null;
-							listItem.classList.add("bg-danger");
 						});
 					}
 				}
@@ -271,6 +267,9 @@ define([
 				input.dataset.url = layerDef.url;
 				input.dataset.layerType = layerDef.type;
 				input.dataset.layerId = layerDef.id;
+				if (layerDef.visibility) {
+					input.dataset.defaultVisibility = layerDef.visibility;
+				}
 				label.appendChild(input);
 				textNode = document.createTextNode(layerDef.title || layerDef.id);
 				label.appendChild(textNode);
@@ -302,7 +301,7 @@ define([
 		// Attach click event handler to checkboxes.
 		for (var i = 0, l = checkboxes.length; i < l; i += 1) {
 			checkbox = checkboxes[i];
-			checkbox.addEventListener("click", toggleLayer);
+			checkbox.addEventListener("click", toggleLayer, true);
 		}
 		
 		return layerListDiv;

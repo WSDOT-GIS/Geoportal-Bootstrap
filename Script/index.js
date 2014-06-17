@@ -306,13 +306,11 @@
 			};
 
 			// Add an event handler for reset.
-			// Set the radio buttons to their default values and then trigger their onchange events.
-			// If this event handler is not added the user must click reset twice before everything is reset.
+			// Must programatically "click" the unchecked default radio buttons. Otherwise user will have to click "Reset" button twice.
 			findRouteLocationForm.addEventListener("reset", function () {
-				var defaultRadios = this.querySelectorAll("[value='SRMP'],[value='point']");
+				var defaultRadios = this.querySelectorAll("[value='SRMP']:not(:checked),[value='point']:not(:checked)");
 				for (var i = 0, l = defaultRadios.length; i < l; i += 1) {
-					defaultRadios[i].checked = true;
-					defaultRadios[i].onchange();
+					defaultRadios[i].click();
 				}
 			});
 

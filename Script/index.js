@@ -299,7 +299,23 @@
 					}
 				}
 
-				console.log(routeLocation);
+				var rlParams = {
+					locations: [routeLocation],
+					referenceDate: form["reference-date"].value,
+					outSR: map.spatialReference.wkid,
+					successHandler: function (/**{Elc.RouteLocation[]}*/ routeLocations) {
+						// TODO: Add to the map.
+						console.log(routeLocations);
+					},
+					errorHandler: function(error) {
+						console.error(error);
+					},
+					useCors: true
+				};
+
+				console.log(rlParams);
+
+				elc.findRouteLocations(rlParams);
 
 				// Return false to prevent the page from reloading.
 				return false;

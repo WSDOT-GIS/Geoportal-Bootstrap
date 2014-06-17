@@ -176,6 +176,19 @@
 		}, "basemapGallery");
 		basemapGallery.startup();
 
+		basemapGallery.on("load", function () {
+			var i, l, basemap;
+			if (config.defaultBasemap) {
+				for (i = 0, l = basemapGallery.basemaps.length; i < l; i += 1) {
+					basemap = basemapGallery.basemaps[i];
+					if (basemap.title === config.defaultBasemap) {
+						basemapGallery.select(basemap.id);
+						break;
+					}
+				}
+			}
+		});
+
 		map.on("update-start", function () {
 			document.getElementById("progressBar").hidden = false;
 		});
@@ -188,8 +201,17 @@
 		legend.startup();
 
 		layerList = LayerList.createLayerList(map, config.operationalLayers);
-
 		document.getElementById("layers").appendChild(layerList);
+
+		// Check all of the checkboxes that have defaultVisibility data properties set to true.
+		map.on("load", function () {
+			var checkboxes = layerList.querySelectorAll("[data-default-visibility]");
+			if (checkboxes && checkboxes.length) {
+				for (var i = 0, l = checkboxes.length; i < l; i += 1) {
+					checkboxes[i].click();
+				}
+			}
+		});
 
 		// Setup ELC controls
 		(function () {
@@ -295,12 +317,9 @@
 			});
 
 			findNearestRouteLocationForm.onsubmit = function () {
-
-
 				// Return false to prevent the page from reloading.
 				return false;
 			};
 		}());
-
 	});
 }());

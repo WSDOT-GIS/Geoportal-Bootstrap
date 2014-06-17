@@ -57,17 +57,17 @@ define([
 			link.href = "#";
 			span = document.createElement("span");
 			span.classList.add("glyphicon");
-			span.classList.add("glyphicon-collapse-up");
+			span.classList.add("glyphicon-chevron-up");
 			link.appendChild(span);
 
 			link.onclick = function () {
-				if (span.classList.contains("glyphicon-collapse-up")) {
-					span.classList.remove("glyphicon-collapse-up");
-					span.classList.add("glyphicon-collapse-down");
+				if (span.classList.contains("glyphicon-chevron-up")) {
+					span.classList.remove("glyphicon-chevron-up");
+					span.classList.add("glyphicon-chevron-down");
 					optionsDiv.classList.add("hidden");
 				} else {
-					span.classList.remove("glyphicon-collapse-down");
-					span.classList.add("glyphicon-collapse-up");
+					span.classList.remove("glyphicon-chevron-down");
+					span.classList.add("glyphicon-chevron-up");
 					optionsDiv.classList.remove("hidden");
 				}
 				return false;
@@ -97,14 +97,15 @@ define([
 		}
 
 		function createListItem(layerInfos, id) {
-			var layerInfo = layerInfos[id], li, ul;
+			var layerInfo = layerInfos[id], li, ul, hasSublayers;
+			hasSublayers = layerInfo.subLayerIds && layerInfo.subLayerIds.length;
 			// Create the output list item.
 			li = document.createElement("li");
 			// Add class for bootstrap styling.
 			li.classList.add("list-group-item");
 			// Add sublayer lists.
 			// Set data-has-sublayers.
-			if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) {
+			if (hasSublayers) {
 				ul = document.createElement("ul");
 				// Add class for bootstrap styling.
 				ul.classList.add("list-group");
@@ -122,7 +123,7 @@ define([
 			checkbox.value = id;
 			checkbox.dataset.subLayerIds = layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "";
 			checkbox.dataset.parentLayerId = layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId;
-			if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) {
+			if (hasSublayers) {
 				checkbox.onchange = checkNestedCheckboxes;
 			}
 			label.appendChild(checkbox);
@@ -145,7 +146,7 @@ define([
 		function createSublayerDiv(layer) {
 			var div = null, ul, applyButton;
 
-			if (layer.setVisibleLayers && layer.layerInfos) {
+			if (layer.setVisibleLayers && layer.layerInfos && layer.layerInfos.length > 1) {
 				div = document.createElement("div");
 				div.setAttribute("class", "well sublayer-list");
 				ul = document.createElement("ul");
@@ -194,7 +195,7 @@ define([
 			*/
 		function toggleLayer(e) {
 			var checkbox, layerId, layer, listItem, checkboxLabel, progress;
-			checkbox = e.currentTarget;
+			checkbox = e.target || e.currentTarget;
 			checkboxLabel = checkbox.parentElement;
 			// Get the li that contains the checkbox.
 			listItem = checkboxLabel.parentElement;
@@ -246,11 +247,7 @@ define([
 							listItem.appendChild(optionsDiv);
 						});
 						layer.on("error", function (error) {
-							checkboxLabel.removeChild(progress);
-							checkbox.checked = false;
 							console.error(error);
-							layer = null;
-							listItem.classList.add("bg-danger");
 						});
 					}
 				}
@@ -270,6 +267,9 @@ define([
 				input.dataset.url = layerDef.url;
 				input.dataset.layerType = layerDef.type;
 				input.dataset.layerId = layerDef.id;
+				if (layerDef.visibility) {
+					input.dataset.defaultVisibility = layerDef.visibility;
+				}
 				label.appendChild(input);
 				textNode = document.createTextNode(layerDef.title || layerDef.id);
 				label.appendChild(textNode);
@@ -301,7 +301,7 @@ define([
 		// Attach click event handler to checkboxes.
 		for (var i = 0, l = checkboxes.length; i < l; i += 1) {
 			checkbox = checkboxes[i];
-			checkbox.addEventListener("click", toggleLayer);
+			checkbox.addEventListener("click", toggleLayer, true);
 		}
 		
 		return layerListDiv;

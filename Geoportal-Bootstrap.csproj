@@ -71,6 +71,7 @@
     <Content Include="Images\WSDOTacronymWhite-177x39.png" />
     <Content Include="Images\WSDOTLogoWHITE-240x39.png" />
     <Content Include="index.html" />
+    <Content Include="Script\elc-controls.js" />
     <Content Include="Script\elc.js" />
     <Content Include="Script\index.js" />
     <Content Include="Script\layer-list.js" />

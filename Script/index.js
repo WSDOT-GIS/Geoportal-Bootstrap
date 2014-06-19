@@ -31,13 +31,14 @@
 		"esri/layers/GraphicsLayer",
 		"esri/renderers/SimpleRenderer",
 		"esri/symbols/SimpleMarkerSymbol",
+		"esri/dijit/Scalebar",
 		"layerList",
 		"elc",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
 	], function (require, Map, Legend, BasemapGallery, Graphic,
 		geometryJsonUtils,
-		GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, LayerList, Elc, config) {
+		GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, ScaleBar, LayerList, Elc, config) {
 		"use strict";
 
 		config = JSON.parse(config);
@@ -140,7 +141,6 @@
 			function setFormMPType() {
 				var mpType = findRouteLocationForm.querySelector("[name='mp-type']:checked").value;
 				var mpClass = "mp-type-arm";
-				//findRouteLocationForm.dataset.mpType = mpType;
 				if (mpType === "ARM") {
 					findRouteLocationForm.classList.add(mpClass);
 				} else {
@@ -154,7 +154,6 @@
 			function setGeometryType() {
 				var gType = findRouteLocationForm.querySelector("[name='geometry-type']:checked").value;
 				var gClass = "geometry-type-point";
-				//findRouteLocationForm.dataset.geometryType = gType;
 				if (gType === "point") {
 					findRouteLocationForm.classList.add(gClass);
 				} else {
@@ -348,6 +347,12 @@
 			zoom: 7,
 			showAttribution: true
 		});
+
+		(new ScaleBar({
+			map: map,
+			attachTo: "bottom-left",
+			scalebarUnit: "dual"
+		}));
 
 		var basemapGallery = new BasemapGallery({
 			map: map,

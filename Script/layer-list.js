@@ -4,12 +4,6 @@ define([
 	"esri/layers/ArcGISDynamicMapServiceLayer"
 ], function (ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer) {
 
-	(function () {
-		if (!document.createElement("div").dataset) {
-			console.error("The dataset property is not supported by this browser.");
-		}
-	}());
-
 	function createLayerList(map, layerDefinitions) {
 		/** Creates the layer options div.
 		* @param {esri/layers/Layer} layer
@@ -119,10 +113,11 @@ define([
 			var checkbox = document.createElement("input");
 			checkbox.type = "checkbox";
 			checkbox.checked = layerInfo.defaultVisibility;
-			//checkbox.dataset.layerId = id;
 			checkbox.value = id;
-			checkbox.dataset.subLayerIds = layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "";
-			checkbox.dataset.parentLayerId = layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId;
+			//checkbox.dataset.subLayerIds = layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "";
+			checkbox.setAttribute("data-sub-layer-ids", layerInfo.subLayerIds ? layerInfo.subLayerIds.join(",") : "");
+			//checkbox.dataset.parentLayerId = layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId;
+			checkbox.setAttribute("data-parent-layer-id",  layerInfo.parentLayerId === -1 ? "" : layerInfo.parentLayerId);
 			if (hasSublayers) {
 				checkbox.onchange = checkNestedCheckboxes;
 			}
@@ -200,7 +195,7 @@ define([
 			// Get the li that contains the checkbox.
 			listItem = checkboxLabel.parentElement;
 
-			layerId = checkbox.dataset.layerId;
+			layerId = checkbox.getAttribute("data-layer-id"); //checkbox.dataset.layerId;
 			layer = map.getLayer(layerId);
 			if (layer) {
 				if (checkbox.checked) {
@@ -216,13 +211,23 @@ define([
 					checkbox.disabled = true;
 					listItem.appendChild(progress);
 					
-					if (checkbox.dataset.layerType === "ArcGISTiledMapServiceLayer") {
-						layer = new ArcGISTiledMapServiceLayer(checkbox.dataset.url, {
-							id: checkbox.dataset.layerId
+					////if (checkbox.dataset.layerType === "ArcGISTiledMapServiceLayer") {
+					////	layer = new ArcGISTiledMapServiceLayer(checkbox.dataset.url, {
+					////		id: checkbox.dataset.layerId
+					////	});
+					////} else if (checkbox.dataset.layerType === "ArcGISDynamicMapServiceLayer") {
+					////	layer = new ArcGISDynamicMapServiceLayer(checkbox.dataset.url, {
+					////		id: checkbox.dataset.layerId
+					////	});
+					////}
+
+					if (checkbox.getAttribute("data-layer-type") === "ArcGISTiledMapServiceLayer") {
+						layer = new ArcGISTiledMapServiceLayer(checkbox.getAttribute("data-url"), {
+							id: checkbox.getAttribute("data-layer-id")
 						});
-					} else if (checkbox.dataset.layerType === "ArcGISDynamicMapServiceLayer") {
-						layer = new ArcGISDynamicMapServiceLayer(checkbox.dataset.url, {
-							id: checkbox.dataset.layerId
+					} else if (checkbox.getAttribute("data-layer-type") === "ArcGISDynamicMapServiceLayer") {
+						layer = new ArcGISDynamicMapServiceLayer(checkbox.getAttribute("data-url"), {
+							id: checkbox.getAttribute("data-layer-id")
 						});
 					}
 					
@@ -264,11 +269,17 @@ define([
 				li.appendChild(label);
 				input = document.createElement("input");
 				input.type = "checkbox";
-				input.dataset.url = layerDef.url;
-				input.dataset.layerType = layerDef.type;
-				input.dataset.layerId = layerDef.id;
+				////input.dataset.url = layerDef.url;
+				////input.dataset.layerType = layerDef.type;
+				////input.dataset.layerId = layerDef.id;
+
+				input.setAttribute("data-url", layerDef.url);
+				input.setAttribute("data-layer-type", layerDef.type);
+				input.setAttribute("data-layer-id", layerDef.id);
+
 				if (layerDef.visibility) {
-					input.dataset.defaultVisibility = layerDef.visibility;
+					////input.dataset.defaultVisibility = layerDef.visibility;
+					input.setAttribute("data-default-visibility", layerDef.visibility);
 				}
 				label.appendChild(input);
 				textNode = document.createTextNode(layerDef.title || layerDef.id);

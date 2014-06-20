@@ -84,7 +84,15 @@ define([
 		var mpTypeRadios = findRouteLocationForm["mp-type"];
 		var gTypeRadios = findRouteLocationForm["geometry-type"];
 
-		document.querySelector("[name='reference-date']").value = new Date();
+		function clearElcGraphics() {
+			[pointsLayer, linesLayer].forEach(function (layer) {
+				if (layer && layer.clear()) {
+					layer.clear();
+				}
+			});
+		}
+
+		document.getElementById("clearElcGraphicsButton").onclick = clearElcGraphics;
 
 		// Setup the layers.
 		(function () {
@@ -111,6 +119,10 @@ define([
 			map.addLayers([pointsLayer, linesLayer]);
 		}());
 
+		/**
+		 * Add route location results to the map.
+		 * @param {RouteLocation[]} routeLocations
+		 */
 		function addResultToMap(routeLocations) {
 			var graphic;
 			for (var i = 0; i < routeLocations.length; i++) {

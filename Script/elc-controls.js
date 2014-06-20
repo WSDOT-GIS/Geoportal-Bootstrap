@@ -84,6 +84,9 @@ define([
 		var mpTypeRadios = findRouteLocationForm["mp-type"];
 		var gTypeRadios = findRouteLocationForm["geometry-type"];
 
+		/**
+		 * Clears all graphics from the graphics layers.
+		 */
 		function clearElcGraphics() {
 			[pointsLayer, linesLayer].forEach(function (layer) {
 				if (layer && layer.clear()) {
@@ -93,6 +96,27 @@ define([
 		}
 
 		document.getElementById("clearElcGraphicsButton").onclick = clearElcGraphics;
+
+		// Set default date
+		(function (dateBox) {
+			/**
+			 * Converts number to string, padding with leading zero if less than two characters long.
+			 * @param {number} n
+			 * @returns {string}
+			 */
+			function addLeadingZeroes(n) {
+				n = String(n);
+				if (n.length < 2) {
+					n = "0" + n;
+				}
+				return n;
+			}
+
+			var date = new Date();
+			if (dateBox) {
+				dateBox.setAttribute("value", [date.getFullYear(), addLeadingZeroes(date.getMonth() + 1), addLeadingZeroes(date.getDate())].join("-"));
+			}
+		}(document.querySelector("[name='reference-date']")));
 
 		// Setup the layers.
 		(function () {

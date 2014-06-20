@@ -5,9 +5,75 @@ define([
 	"esri/layers/GraphicsLayer",
 	"esri/renderers/SimpleRenderer",
 	"esri/symbols/SimpleMarkerSymbol",
+	"esri/InfoTemplate",
 	"elc",
-], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, Elc) {
+], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, InfoTemplate, Elc) {
 	"use strict";
+
+	/** Converts an object into a definition list.
+	 * @param {(Graphic|Object)} obj
+	 * @returns {HTMLDListElement}
+	 */
+	function objectToDL(obj) {
+		var dl, dt, dd;
+
+		if (obj.attributes) {
+			obj = obj.attributes;
+		}
+
+		dl = document.createElement("dl");
+		
+		for (var name in obj) {
+			if (obj.hasOwnProperty(name)) {
+				dt = document.createElement("dt");
+				dt.textContent = name;
+				dl.appendChild(dt);
+				dd = document.createElement("dd");
+				dd.textContent = String(obj[name]);
+				dl.appendChild(dd);
+			}
+		}
+
+		return dl;
+	}
+
+	function routeLocationToAttributes(routeLocation, ignoredRe) {
+		var output = {}, val, timeRe = /T.+$/, acReturnCodeRe = /ArmCalcReturnCode$/i;
+		if (ignoredRe === undefined) {
+			ignoredRe = /^(?:(?:RouteGeometry)|(?:(?:End)?Back))$/i;
+		}
+		for (var propName in routeLocation) {
+			if (routeLocation.hasOwnProperty(propName)) {
+				val = routeLocation[propName];
+				if (typeof val === "string") {
+					val = val.trim();
+				}
+				/*jshint eqnull:true*/
+				if (!ignoredRe.test(propName) && (val === 0 || !!val) && !(acReturnCodeRe.test(propName) && val === 0)) {
+					if (propName === "Srmp") {
+						val = [val, routeLocation.Back ? "B" : ""].join("");
+					} else if (propName === "EndSrmp") {
+						val = [val, routeLocation.EndBack ? "B" : ""].join("");
+					}
+					if (val.toISOString) {
+						val = val.toISOString().replace(timeRe,"");
+					}
+					output[propName] = val;
+				}
+				/*jshint eqnull:false*/
+			}
+		}
+		return output;
+	}
+
+	function routeLocationToGraphic(routeLocation) {
+		var graphic = null, geometry;
+		if (routeLocation) {
+			geometry = !!routeLocation.RouteGeometry ? geometryJsonUtils.fromJson(routeLocation.RouteGeometry) : null;
+			graphic = new Graphic(geometry, null, routeLocationToAttributes(routeLocation));
+		}
+		return graphic;
+	}
 
 	// Setup ELC controls
 	function ElcControls(map) {
@@ -18,11 +84,17 @@ define([
 		var mpTypeRadios = findRouteLocationForm["mp-type"];
 		var gTypeRadios = findRouteLocationForm["geometry-type"];
 
+		document.querySelector("[name='reference-date']").value = new Date();
+
 		// Setup the layers.
 		(function () {
-			var pointRenderer, pointSymbol;
+			var pointRenderer, pointSymbol, infoTemplate;
+
+			infoTemplate = new InfoTemplate("Route Location", objectToDL);
+
 			pointsLayer = new GraphicsLayer({
-				id: "elcPoints"
+				id: "elcPoints",
+				infoTemplate: infoTemplate
 			});
 
 			pointSymbol = new SimpleMarkerSymbol().setColor("green");
@@ -31,6 +103,7 @@ define([
 
 			linesLayer = new GraphicsLayer({
 				id: "elcLines",
+				infoTemplate: infoTemplate,
 				className: "elc-lines",
 				styling: false
 			});
@@ -38,17 +111,7 @@ define([
 			map.addLayers([pointsLayer, linesLayer]);
 		}());
 
-		function routeLocationToGraphic(routeLocation) {
-			var graphic = null, geometry;
-			if (routeLocation) {
-				geometry = geometryJsonUtils.fromJson(routeLocation.RouteGeometry);
-				graphic = new Graphic(geometry);
-			}
-			return graphic;
-		}
-
 		function addResultToMap(routeLocations) {
-			// TODO: Implement.
 			var graphic;
 			for (var i = 0; i < routeLocations.length; i++) {
 				graphic = routeLocationToGraphic(routeLocations[i]);
@@ -60,11 +123,31 @@ define([
 					}
 				}
 			}
+
+			/**
+			 * Opens the popup for the geometry.
+			 */
+			function activatePopup() {
+				var geometry = graphic.geometry, infoWindow = map.infoWindow;
+				// If the geometry is not a point, get the center point.
+				if (!geometry.x && geometry.getExtent) {
+					geometry = geometry.getExtent().getCenter();
+				}
+				infoWindow.setFeatures([graphic]);
+				infoWindow.show(geometry);
+				
+			}
+
+			if (!!graphic.geometry.x) {
+				map.centerAndZoom(graphic.geometry, 12).then(activatePopup);
+			} else if (!!graphic.geometry.getExtent) {
+				map.setExtent(graphic.geometry.getExtent()).then(activatePopup);
+			}
 		}
 
 		/**
-			* Adds or removes the "mp-type-arm" class to the form based on the value of the ARM / SRMP radio buttons.
-			*/
+		 * Adds or removes the "mp-type-arm" class to the form based on the value of the ARM / SRMP radio buttons.
+		 */
 		function setFormMPType() {
 			var mpType = findRouteLocationForm.querySelector("[name='mp-type']:checked").value;
 			var mpClass = "mp-type-arm";
@@ -76,8 +159,8 @@ define([
 		}
 
 		/**
-			* Adds or removes the "geometry-type-point" class to the form based on the which geometry type radio button is checked.
-			*/
+		 * Adds or removes the "geometry-type-point" class to the form based on the which geometry type radio button is checked.
+		 */
 		function setGeometryType() {
 			var gType = findRouteLocationForm.querySelector("[name='geometry-type']:checked").value;
 			var gClass = "geometry-type-point";

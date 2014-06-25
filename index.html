@@ -66,15 +66,18 @@
 	<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script>
-		var dojoConfig = {
-			packages: [
-				{
-					"name": "layerList",
-					"location": location.pathname.replace(/[^\/]+$/, "") + "/Script",
-					"main": "layer-list"
-				}
-			]
-		}
+		(function (root) {
+			var dojoConfig = {
+				packages: [
+					{
+						"name": "layerList",
+						"location": root + "Script",
+						"main": "layer-list"
+					}
+				]
+			}
+			window.dojoConfig = dojoConfig;
+		}([location.origin, location.pathname.replace(/[^\/]+\/?$/, "")].join("")));
 	</script>
 	<script src="//js.arcgis.com/3.9compact/"></script>
 	<script src="Script/index.js"></script>

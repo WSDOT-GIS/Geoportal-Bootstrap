@@ -1,8 +1,9 @@
 ﻿/*global define*/
 define([
 	"esri/layers/ArcGISTiledMapServiceLayer",
-	"esri/layers/ArcGISDynamicMapServiceLayer"
-], function (ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer) {
+	"esri/layers/ArcGISDynamicMapServiceLayer",
+	"esri/layers/FeatureLayer"
+], function (ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer, FeatureLayer) {
 
 	(function () {
 		if (!document.createElement("div").dataset) {
@@ -222,6 +223,10 @@ define([
 						});
 					} else if (checkbox.dataset.layerType === "ArcGISDynamicMapServiceLayer") {
 						layer = new ArcGISDynamicMapServiceLayer(checkbox.dataset.url, {
+							id: checkbox.dataset.layerId
+						});
+					} else if (checkbox.dataset.layerType === "FeatureLayer") {
+						layer = new FeatureLayer(checkbox.dataset.url, {
 							id: checkbox.dataset.layerId
 						});
 					}

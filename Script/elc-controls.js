@@ -112,9 +112,18 @@ define([
 				return n;
 			}
 
+			/**
+			 * Converts a Date object into the string format used by an <input type="date"> element.
+			 * @param {Date} date
+			 * @returns {string}
+			 */
+			function dateToDateInputValueFormat(date) {
+				return [date.getFullYear(), addLeadingZeroes(date.getMonth() + 1), addLeadingZeroes(date.getDate())].join("-");
+			}
+
 			var date = new Date();
 			if (dateBox) {
-				dateBox.setAttribute("value", [date.getFullYear(), addLeadingZeroes(date.getMonth() + 1), addLeadingZeroes(date.getDate())].join("-"));
+				dateBox.setAttribute("value", dateToDateInputValueFormat(date));
 			}
 		}(document.querySelector("[name='reference-date']")));
 

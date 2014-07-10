@@ -94,17 +94,29 @@ define([
 		 * @param {Point} results.geographicGeometry
 		 */
 		function findNearestRouteOnDrawComplete(results) {
+			var radius = Number(document.getElementById("find-nearest-search-radius").getAttribute("value"));
 			draw.deactivate();
 			elc.findNearestRouteLocations({
 				useCors: true,
 				coordinates: [results.geometry.x, results.geometry.y],
 				referenceDate: new Date(),
-				searchRadius: Number(document.getElementById("find-nearest-search-radius").getAttribute("value")),
+				searchRadius: radius,
 				inSR: results.geometry.spatialReference.wkid,
 				outSR: map.spatialReference.wkid,
-				successHandler: addResultToMap,
+				successHandler: function (routeLocations) {
+					if (routeLocations && routeLocations.length) {
+						addResultToMap(routeLocations);
+					} else {
+						// Show info window at clicked location with "no routeLocations" message.
+						map.infoWindow.clearFeatures();
+						map.infoWindow.setTitle("No nearby route locations");
+						map.infoWindow.setContent(["No route locations were found within a radius of ", radius, "'."].join(""));
+						map.infoWindow.show(results.geometry);
+					}
+				},
 				errorHandler: function (error) {
 					console.error(error);
+					alert("An error occured attempting to locate the nearest route location. See browser console for details.");
 				}
 			});
 		}

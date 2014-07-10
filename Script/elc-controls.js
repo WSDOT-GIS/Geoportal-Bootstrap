@@ -6,9 +6,11 @@ define([
 	"esri/renderers/SimpleRenderer",
 	"esri/symbols/SimpleMarkerSymbol",
 	"esri/InfoTemplate",
+	"esri/toolbars/draw",
 	"elc",
-], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, InfoTemplate, Elc) {
+], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, InfoTemplate, Draw, Elc) {
 	"use strict";
+
 
 	/** Converts an object into a definition list.
 	 * @param {(Graphic|Object)} obj
@@ -79,10 +81,39 @@ define([
 	function ElcControls(map) {
 		var elc = new Elc.RouteLocator();
 		var pointsLayer, linesLayer;
-		var findRouteLocationForm = document.forms.findRouteLocation, findNearestRouteLocationForm = document.forms.findNearestRouteLocation;
+		var findRouteLocationForm = document.forms.findRouteLocation;
 
 		var mpTypeRadios = findRouteLocationForm["mp-type"];
 		var gTypeRadios = findRouteLocationForm["geometry-type"];
+
+		var draw;
+
+		/**
+		 * @param {Object} results
+		 * @param {Point} results.geometry
+		 * @param {Point} results.geographicGeometry
+		 */
+		function findNearestRouteOnDrawComplete(results) {
+			draw.deactivate();
+			elc.findNearestRouteLocations({
+				useCors: true,
+				coordinates: [results.geometry.x, results.geometry.y],
+				referenceDate: new Date(),
+				searchRadius: Number(document.getElementById("find-nearest-search-radius").getAttribute("value")),
+				inSR: results.geometry.spatialReference.wkid,
+				outSR: map.spatialReference.wkid,
+				successHandler: addResultToMap,
+				errorHandler: function (error) {
+					console.error(error);
+				}
+			});
+		}
+
+		// Create the draw toolbar if it does not already exist.
+		draw = new Draw(map, {
+			showTooltips: true
+		});
+		draw.on("draw-complete", findNearestRouteOnDrawComplete);
 
 		/**
 		 * Clears all graphics from the graphics layers.
@@ -301,9 +332,8 @@ define([
 			}
 		});
 
-		findNearestRouteLocationForm.onsubmit = function () {
-			// Return false to prevent the page from reloading.
-			return false;
+		document.getElementById("findNearestDrawButton").onclick = function () {
+			draw.activate(Draw.POINT);
 		};
 	}
 

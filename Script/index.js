@@ -26,11 +26,14 @@
 		"esri/map",
 		"esri/dijit/Legend",
 		"esri/dijit/BasemapGallery",
+		"esri/dijit/Scalebar",
 		"layerList",
+		"elc-controls",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, Map, Legend, BasemapGallery, LayerList, config) {
+	], function (require, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, config) {
 		"use strict";
+		var map, legend, layerList;
 
 		config = JSON.parse(config);
 
@@ -44,8 +47,6 @@
 		$("[data-toggle=offcanvas]").click(function () {
 			$(".row-offcanvas").toggleClass('active');
 		});
-
-		var map, legend, layerList;
 
 		/** 
 		 * Set the height of the map div.
@@ -169,6 +170,12 @@
 			showAttribution: true
 		});
 
+		(new ScaleBar({
+			map: map,
+			attachTo: "bottom-left",
+			scalebarUnit: "dual"
+		}));
+
 		var basemapGallery = new BasemapGallery({
 			map: map,
 			basemapIds: map.layerIds
@@ -202,15 +209,22 @@
 		layerList = LayerList.createLayerList(map, config.operationalLayers);
 		document.getElementById("layers").appendChild(layerList);
 
-		// Check all of the checkboxes that have defaultVisibility data properties set to true.
-		map.on("load", function () {
+		/**
+		 * Check all of the checkboxes that have defaultVisibility data properties set to true.
+		 */
+		function turnOnDefaultLayers() {
 			var checkboxes = layerList.querySelectorAll("[data-default-visibility]");
 			if (checkboxes && checkboxes.length) {
 				for (var i = 0, l = checkboxes.length; i < l; i += 1) {
 					checkboxes[i].click();
 				}
 			}
-		});
+
+			ElcControls(map);
+		}
+
+		// Check all of the checkboxes that have defaultVisibility data properties set to true.
+		map.on("load", turnOnDefaultLayers);
 
 	});
 }());

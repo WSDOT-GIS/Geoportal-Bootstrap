@@ -8,7 +8,8 @@ define([
 	"esri/InfoTemplate",
 	"esri/toolbars/draw",
 	"elc",
-], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, InfoTemplate, Draw, Elc) {
+	"dojo/text!./template.html"
+], function (Graphic, geometryJsonUtils, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, InfoTemplate, Draw, Elc, template) {
 	"use strict";
 
 
@@ -78,15 +79,23 @@ define([
 	}
 
 	// Setup ELC controls
-	function ElcControls(map) {
-		var elc = new Elc.RouteLocator();
-		var pointsLayer, linesLayer;
-		var findRouteLocationForm = document.forms.findRouteLocation;
+	function ElcControls(containerElement, map) {
+		var elc, pointsLayer, linesLayer, findRouteLocationForm, mpTypeRadios, gTypeRadios, draw;
 
-		var mpTypeRadios = findRouteLocationForm["mp-type"];
-		var gTypeRadios = findRouteLocationForm["geometry-type"];
+		if (typeof containerElement === "string") {
+			containerElement = document.getElementById(containerElement);
+		}
+		if (!containerElement) {
+			throw new TypeError("Invalid containerElement parameter");
+		}
+		// Add the template to the containerElement.
+		containerElement.innerHTML = template;
 
-		var draw;
+		elc = new Elc.RouteLocator();
+		findRouteLocationForm = document.forms.findRouteLocation;
+
+		mpTypeRadios = findRouteLocationForm["mp-type"];
+		gTypeRadios = findRouteLocationForm["geometry-type"];
 
 		/**
 		 * @param {Object} results

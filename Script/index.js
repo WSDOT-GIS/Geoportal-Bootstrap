@@ -226,7 +226,7 @@
 				}
 			}
 
-			ElcControls(map);
+			ElcControls(document.getElementById("elcPane"), map);
 		}
 
 		// Check all of the checkboxes that have defaultVisibility data properties set to true.

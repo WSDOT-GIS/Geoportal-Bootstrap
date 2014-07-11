@@ -23,6 +23,7 @@
 
 	require([
 		"require",
+		"esri/config",
 		"esri/map",
 		"esri/dijit/Legend",
 		"esri/dijit/BasemapGallery",
@@ -31,9 +32,14 @@
 		"elc-controls",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, config) {
 		"use strict";
 		var map, legend, layerList;
+
+		// Add to the list of CORS enabled servers.
+		(function (servers) {
+			servers.push("wsdot.wa.gov");
+		}(esriConfig.defaults.io.corsEnabledServers));
 
 		config = JSON.parse(config);
 

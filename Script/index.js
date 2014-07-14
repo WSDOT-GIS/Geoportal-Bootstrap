@@ -37,6 +37,11 @@
 		"use strict";
 		var map, legend, layerList, layerFactory;
 
+		/**
+		 * Toggles the visibility of a button's associated layer.
+		 * @param {Event} evt
+		 * @param {HTMLButtonElement} evt.target - The button that was clicked.
+		 */
 		function toggleButtonLayer(evt) {
 			var button, layer;
 			button = evt.target;
@@ -44,14 +49,19 @@
 				layer = map.getLayer(button.dataset.layerId);
 				if (layer.visible) {
 					layer.hide();
-					button.textContent = "Show";
+					button.innerHTML = "<span class='glyphicon glyphicon-unchecked'></span> Show";
 				} else {
 					layer.show();
-					button.textContent = "Hide";
+					button.innerHTML = "<span class='glyphicon glyphicon-check'></span> Hide";
 				}
 			}
 		}
 
+		/**
+		 * Once a layer has been loaded, change the associated button
+		 * so that it toggles the layer's visibility.
+		 * @param {Layer} layer
+		 */
 		function changeButtonToToggleButton(layer) {
 			var button;
 			button = document.querySelector("button[value='" + layer.url + "'");
@@ -59,7 +69,7 @@
 			if (button) {
 				button.onclick = toggleButtonLayer;
 				button.disabled = false;
-				button.textContent = layer.visible ? "Hide" : "Show";
+				button.innerHTML = layer.visible ? "<span class='glyphicon glyphicon-check'></span> Hide" : "<span class='glyphicon glyphicon-unchecked'></span> Show";
 			}
 		}
 
@@ -81,7 +91,6 @@
 			function onAddClick(evt) {
 				var button = evt.target;
 				button.disabled = true;
-				//console.log("url", [button.value]);
 				layerFactory.createLayer({ url: button.value });
 			}
 

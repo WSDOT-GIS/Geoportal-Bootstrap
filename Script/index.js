@@ -30,11 +30,110 @@
 		"esri/dijit/Scalebar",
 		"layerList",
 		"elc-controls",
+		"LayerFactory",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, config) {
 		"use strict";
-		var map, legend, layerList;
+		var map, legend, layerList, layerFactory;
+
+		function toggleButtonLayer(evt) {
+			var button, layer;
+			button = evt.target;
+			if (button) {
+				layer = map.getLayer(button.dataset.layerId);
+				if (layer.visible) {
+					layer.hide();
+					button.textContent = "Show";
+				} else {
+					layer.show();
+					button.textContent = "Hide";
+				}
+			}
+		}
+
+		function changeButtonToToggleButton(layer) {
+			var button;
+			button = document.querySelector("button[value='" + layer.url + "'");
+			button.dataset.layerId = layer.id;
+			if (button) {
+				button.onclick = toggleButtonLayer;
+				button.disabled = false;
+				button.textContent = layer.visible ? "Hide" : "Show";
+			}
+		}
+
+		layerFactory = new LayerFactory();
+		layerFactory.on("layer-create", function (response) {
+			var layer = response.layer;
+			if (layer) {
+				map.addLayer(layer);
+				changeButtonToToggleButton(layer);
+			}
+		});
+		layerFactory.on("layer-error", function (response) {
+			if (response.error) {
+				console.error("layer factory error", response.error);
+			}
+		});
+
+		(function () {
+			function onAddClick(evt) {
+				var button = evt.target;
+				button.disabled = true;
+				//console.log("url", [button.value]);
+				layerFactory.createLayer({ url: button.value });
+			}
+
+			function createTableOfSearchResults(searchResults) {
+				var table, item, row, cell, thumb, addButton, titleElement, snippetElement;
+				table = document.createElement("table");
+				table.setAttribute("class", "table table-condensed");
+				for (var i = 0, l = searchResults.length; i < l; i += 1) {
+					item = searchResults[i];
+					row = table.insertRow(-1);
+					cell = row.insertCell(-1);
+					thumb = document.createElement("img");
+					thumb.setAttribute("class", "img-responsive");
+					thumb.src = item.thumbnail;
+					thumb.alt = "Thumb";
+					cell.appendChild(thumb);
+					cell = row.insertCell(-1);
+					titleElement = document.createElement("div");
+					titleElement.setAttribute("class", "agol-title");
+					titleElement.innerText = item.title;
+					cell.appendChild(titleElement);
+
+					snippetElement = document.createElement("p");
+					snippetElement.textContent = item.snippet;
+					snippetElement.setAttribute("class", "agol-snippet");
+					cell.appendChild(snippetElement);
+
+					addButton = document.createElement("button");
+					addButton.type = "button";
+					addButton.innerText = "Add to Map";
+					addButton.setAttribute("class", "btn btn-primary");
+					addButton.value = item.url;
+					addButton.setAttribute("data-type", item.type);
+					addButton.onclick = onAddClick;
+
+					cell.appendChild(addButton);
+				}
+				return table;
+			}
+			var searchWorker;
+			// Start the search worker
+			searchWorker = new Worker("./Script/agol/search-worker.js");
+			searchWorker.addEventListener("message", function (e) {
+				var resultsDiv, response, table;
+				response = e.data.response;
+				console.log("worker message", response);
+				resultsDiv = document.getElementById("agolSearchResults");
+				table = createTableOfSearchResults(response.results);
+				resultsDiv.appendChild(table);
+			});
+			searchWorker.postMessage({ operation: "search" });
+		}());
 
 		// Add to the list of CORS enabled servers.
 		(function (servers) {

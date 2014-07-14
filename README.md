@@ -13,6 +13,8 @@ Should work with the latest versions of
 ## Files copied from other repositories ##
 
 * [elc-js]
+* [LayerFactory]
 
 
 [elc-js]:https://github.com/WSDOT-GIS/elc-js
+[LayerFactory]:https://github.com/WSDOT-GIS/LayerFactory

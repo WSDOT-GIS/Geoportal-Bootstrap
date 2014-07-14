@@ -7,8 +7,8 @@
 	<title>WSDOT GeoPortal</title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
-	<link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css" />
-	<link rel="stylesheet" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css" />
+	<link rel="stylesheet" href="//js.arcgis.com/3.10/js/esri/css/esri.css" />
+	<link rel="stylesheet" href="//js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css" />
 	<link href="Style/index.css" rel="stylesheet" />
 </head>
 <body>
@@ -53,7 +53,33 @@
 							<div id="basemapGallery" class="claro"></div>
 						</div>
 						<div class="tab-pane" id="layersPane">
-							<div id="layers"></div>
+							<div class="panel-group" id="layersAccordion">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#layersAccordion" href="#agolPanel">Add Data</a>
+										</h4>
+									</div>
+									<div id="agolPanel" class="panel-collapse collapse in">
+										<div class="panel-body">
+											<div id="agolSearchResults"></div>
+										</div>
+									</div>
+								</div>
+
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#layersAccordion" href="#layersPanel">Layers</a>
+										</h4>
+									</div>
+									<div id="layersPanel" class="panel-collapse collapse in">
+										<div class="panel-body">
+											<div id="layers"></div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="tab-pane" id="elcPane">
 							<!-- Will be loaded from template -->
@@ -86,13 +112,18 @@
 						"name": "elc-controls",
 						"location": root + "Script/elc-controls",
 						"main": "elc-controls"
+					},
+					{
+						"name": "LayerFactory",
+						"location": root + "Script/LayerFactory",
+						"main": "LayerFactory"
 					}
 				]
 			}
 			window.dojoConfig = dojoConfig;
 		}([location.origin, location.pathname.replace(/[^\/]+$/, "")].join("")));
 	</script>
-	<script src="//js.arcgis.com/3.9/"></script>
+	<script src="//js.arcgis.com/3.10/"></script>
 	<script src="Script/index.js"></script>
 </body>
 </html>

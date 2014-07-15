@@ -2,18 +2,42 @@
 	"defaultBasemap": "Topographic",
 	"operationalLayers":  [
 		{
-			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/FishPassageBarriersRelevantToCase/MapServer",
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/CorrectedBarriersCaseArea/MapServer",
 			"type": "ArcGISDynamicMapServiceLayer",
-			"id":  "relevant_to_us_v_wa",
-			"title":  "Relevant to US v. WA",
+			"id":  "corrected_barriers_case_area",
+			"title":  "Corrected Barriers Case Area"
+		},
+		{
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/InDesignBarriersCaseArea/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"title":  "In-Design Barriers Case Area",
+			"id":  "in_design_barriers_case_area"
+		},
+		{
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/UncorrectedBarriersCaseArea/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id":  "uncorrected_barriers_case_area",
+			"title":  "Uncorrected Barriers Case Area"
+		},
+		{
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/CorrectedBarriersStatewide/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id":  "corrected_barriers_statewide",
+			"title":  "Corrected Barriers Statewide",
 			"visibility": true
 		},
 		{
-			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/FishPassageBarriersStatewide/MapServer",
+			"url": "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/UncorrectedBarriersStatewide/MapServer",
 			"type": "ArcGISDynamicMapServiceLayer",
-			"id":  "statewide",
-			"title":  "Statewide",
+			"id":  "uncorrected_barriers_statewide",
+			"title":  "Uncorrected Barriers Statewide",
 			"visibility": true
+		},
+		{
+			"url":  "http://hqolymgis21t/ArcGIS/rest/services/FishPassage/CaseAreaBoundary/MapServer",
+			"type": "ArcGISDynamicMapServiceLayer",
+			"id": "case_area_boundary",
+			"title": "Case Area Boundary"
 		},
 		{
 			"url": "//fortress.wa.gov/dfw/gispublic/arcgis/rest/services/ApplicationServices/NHD_Hydro_Cache/MapServer",
@@ -34,24 +58,6 @@
 			"id":  "WRIA",
 			"title":  "WRIA",
 			"outFields": ["WRIA_NR"]
-		},
-		{
-			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CityLimits/MapServer",
-			"type": "ArcGISTiledMapServiceLayer",
-			"id": "city_limits",
-			"title":  "City Limits"
-		},
-		{
-			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/CongressionalDistricts/MapServer",
-			"type": "ArcGISDynamicMapServiceLayer",
-			"id": "congressional_districts",
-			"title": "Congressional Districts"
-		},
-		{
-			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/Shared/FerryRoutes/MapServer",
-			"type": "ArcGISDynamicMapServiceLayer",
-			"id": "ferry_routes",
-			"title":  "Ferry Routes"
 		}
 	]
 }

@@ -35,114 +35,11 @@
 		"dojo/domReady!"
 	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, config) {
 		"use strict";
-		var map, legend, layerList, layerFactory;
+		var map, legend, layerList;
 
-		/**
-		 * Toggles the visibility of a button's associated layer.
-		 * @param {Event} evt
-		 * @param {HTMLButtonElement} evt.target - The button that was clicked.
-		 */
-		function toggleButtonLayer(evt) {
-			var button, layer;
-			button = evt.target;
-			if (button) {
-				layer = map.getLayer(button.dataset.layerId);
-				if (layer.visible) {
-					layer.hide();
-					button.innerHTML = "<span class='glyphicon glyphicon-unchecked'></span> Show";
-				} else {
-					layer.show();
-					button.innerHTML = "<span class='glyphicon glyphicon-check'></span> Hide";
-				}
-			}
-		}
 
-		/**
-		 * Once a layer has been loaded, change the associated button
-		 * so that it toggles the layer's visibility.
-		 * @param {Layer} layer
-		 */
-		function changeButtonToToggleButton(layer) {
-			var button;
-			button = document.querySelector("button[value='" + layer.url + "'");
-			button.dataset.layerId = layer.id;
-			if (button) {
-				button.onclick = toggleButtonLayer;
-				button.disabled = false;
-				button.innerHTML = layer.visible ? "<span class='glyphicon glyphicon-check'></span> Hide" : "<span class='glyphicon glyphicon-unchecked'></span> Show";
-			}
-		}
 
-		layerFactory = new LayerFactory();
-		layerFactory.on("layer-create", function (response) {
-			var layer = response.layer;
-			if (layer) {
-				map.addLayer(layer);
-				changeButtonToToggleButton(layer);
-			}
-		});
-		layerFactory.on("layer-error", function (response) {
-			if (response.error) {
-				console.error("layer factory error", response.error);
-			}
-		});
 
-		(function () {
-			function onAddClick(evt) {
-				var button = evt.target;
-				button.disabled = true;
-				layerFactory.createLayer({ url: button.value });
-			}
-
-			function createTableOfSearchResults(searchResults) {
-				var table, item, row, cell, thumb, addButton, titleElement, snippetElement;
-				table = document.createElement("table");
-				table.setAttribute("class", "table table-condensed");
-				for (var i = 0, l = searchResults.length; i < l; i += 1) {
-					item = searchResults[i];
-					row = table.insertRow(-1);
-					cell = row.insertCell(-1);
-					thumb = document.createElement("img");
-					thumb.setAttribute("class", "img-responsive");
-					thumb.src = item.thumbnail;
-					thumb.alt = "Thumb";
-					cell.appendChild(thumb);
-					cell = row.insertCell(-1);
-					titleElement = document.createElement("div");
-					titleElement.setAttribute("class", "agol-title");
-					titleElement.innerText = item.title;
-					cell.appendChild(titleElement);
-
-					snippetElement = document.createElement("p");
-					snippetElement.textContent = item.snippet;
-					snippetElement.setAttribute("class", "agol-snippet");
-					cell.appendChild(snippetElement);
-
-					addButton = document.createElement("button");
-					addButton.type = "button";
-					addButton.innerText = "Add to Map";
-					addButton.setAttribute("class", "btn btn-primary");
-					addButton.value = item.url;
-					addButton.setAttribute("data-type", item.type);
-					addButton.onclick = onAddClick;
-
-					cell.appendChild(addButton);
-				}
-				return table;
-			}
-			var searchWorker;
-			// Start the search worker
-			searchWorker = new Worker("./Script/agol/search-worker.js");
-			searchWorker.addEventListener("message", function (e) {
-				var resultsDiv, response, table;
-				response = e.data.response;
-				console.log("worker message", response);
-				resultsDiv = document.getElementById("agolSearchResults");
-				table = createTableOfSearchResults(response.results);
-				resultsDiv.appendChild(table);
-			});
-			searchWorker.postMessage({ operation: "search" });
-		}());
 
 		// Add to the list of CORS enabled servers.
 		(function (servers) {
@@ -283,6 +180,169 @@
 			zoom: 7,
 			showAttribution: true
 		});
+
+		(function (theMap) {
+			var searchWorker, layerFactory;
+
+			function onAddClick(evt) {
+				var button = evt.target;
+				button.disabled = true;
+				layerFactory.createLayer({ url: button.value });
+			}
+
+			function createTableOfSearchResults(searchResults) {
+				var table, item, row, cell, thumb, addButton, titleElement, snippetElement, btnGroup;
+
+				function createOptionButtons(parent) {
+					var infoButton, sublayersButton, opacityButton, span;
+
+					// Add
+					addButton = document.createElement("button");
+					addButton.type = "button";
+					addButton.innerText = "Add to Map";
+					addButton.setAttribute("class", "btn btn-primary");
+					addButton.value = item.url;
+					addButton.setAttribute("data-type", item.type);
+					addButton.onclick = onAddClick;
+					parent.appendChild(addButton);
+
+					// Info (this is actually a link)
+					infoButton = document.createElement("a");
+					infoButton.href = "http://wsdot.maps.arcgis.com/home/item.html?id=" + item.id;
+					infoButton.target = "layerInfo";
+					infoButton.title = "Get information about this layer";
+					infoButton.setAttribute("class", "btn btn-default layer-info");
+					span = document.createElement("span");
+					span.setAttribute("class", "glyphicon glyphicon-info-sign");
+					infoButton.appendChild(span);
+					parent.appendChild(infoButton);
+
+					// Sublayers
+					sublayersButton = document.createElement("button");
+					sublayersButton.title = "Control the visibility of this layer's sublayers.";
+					sublayersButton.setAttribute("class", "btn btn-default layer-sublayers");
+					sublayersButton.disabled = true;
+					span = document.createElement("span");
+					span.setAttribute("class", "glyphicon glyphicon-th-list");
+					sublayersButton.appendChild(span);
+					parent.appendChild(sublayersButton);
+
+					// Opacity
+					opacityButton = document.createElement("button");
+					opacityButton.title = "Control the layer's opacity.";
+					opacityButton.setAttribute("class", "btn btn-default layer-opacity");
+					opacityButton.disabled = true;
+					span = document.createElement("span");
+					span.setAttribute("class", "glyphicon glyphicon-eye-close");
+					opacityButton.appendChild(span);
+					parent.appendChild(opacityButton);
+				}
+
+				table = document.createElement("table");
+				table.setAttribute("class", "table table-condensed");
+				for (var i = 0, l = searchResults.length; i < l; i += 1) {
+					item = searchResults[i];
+					row = table.insertRow(-1);
+					cell = row.insertCell(-1);
+					thumb = document.createElement("img");
+					thumb.setAttribute("class", "img-responsive");
+					thumb.src = item.thumbnail;
+					thumb.alt = "Thumb";
+					cell.appendChild(thumb);
+					cell = row.insertCell(-1);
+					titleElement = document.createElement("div");
+					titleElement.setAttribute("class", "agol-title");
+					titleElement.innerText = item.title;
+					cell.appendChild(titleElement);
+
+					snippetElement = document.createElement("p");
+					snippetElement.textContent = item.snippet;
+					snippetElement.setAttribute("class", "agol-snippet");
+					cell.appendChild(snippetElement);
+
+					btnGroup = document.createElement("div");
+					btnGroup.classList.add("btn-group");
+					cell.appendChild(btnGroup);
+
+					createOptionButtons(btnGroup);
+				}
+				return table;
+			}
+
+			/**
+			 * Toggles the visibility of a button's associated layer.
+			 * @param {Event} evt
+			 * @param {HTMLButtonElement} evt.target - The button that was clicked.
+			 */
+			function toggleButtonLayer(evt) {
+				var button, layer, iconSpan;
+				button = evt.target;
+				if (button) {
+					layer = theMap.getLayer(button.dataset.layerId);
+					iconSpan = button.querySelector("span");
+					if (layer.visible) {
+						layer.hide();
+						iconSpan.classList.remove("glyphicon-check");
+						iconSpan.classList.add("glyphicon-unchecked");
+						iconSpan.nextSibling.textContent = " Show";
+					} else {
+						layer.show();
+						iconSpan.classList.add("glyphicon-check");
+						iconSpan.classList.remove("glyphicon-unchecked");
+						iconSpan.nextSibling.textContent = " Hide";
+					}
+				}
+			}
+
+			/**
+			 * Once a layer has been loaded, change the associated button
+			 * so that it toggles the layer's visibility.
+			 * @param {Layer} layer
+			 */
+			function setupLoadedLayerControls(layer) {
+				var button, span;
+				button = document.querySelector("button[value='" + layer.url + "']");
+				button.dataset.layerId = layer.id;
+				if (button) {
+					button.innerHTML = "";
+					span = document.createElement("span");
+					span.classList.add("glyphicon");
+					span.classList.add(layer.visible ? "glyphicon-check" : "glyphicon-unchecked");
+					button.appendChild(span);
+					button.onclick = toggleButtonLayer;
+					button.disabled = false;
+					//button.innerHTML = layer.visible ? "<span class='glyphicon glyphicon-check'></span> Hide" : "<span class='glyphicon glyphicon-unchecked'></span> Show";
+					button.appendChild(document.createTextNode(layer.visible ? " Hide" : " Show"));
+				}
+			}
+
+			
+
+			layerFactory = new LayerFactory();
+			layerFactory.on("layer-create", function (response) {
+				var layer = response.layer;
+				if (layer) {
+					theMap.addLayer(layer);
+					setupLoadedLayerControls(layer);
+				}
+			});
+			layerFactory.on("layer-error", function (response) {
+				if (response.error) {
+					console.error("layer factory error", response.error);
+				}
+			});
+			// Start the search worker
+			searchWorker = new Worker("./Script/agol/search-worker.js");
+			searchWorker.addEventListener("message", function (e) {
+				var resultsDiv, response, table;
+				response = e.data.response;
+				console.log("worker message", response);
+				resultsDiv = document.getElementById("agolSearchResults");
+				table = createTableOfSearchResults(response.results);
+				resultsDiv.appendChild(table);
+			});
+			searchWorker.postMessage({ operation: "search" });
+		}(map));
 
 		(new ScaleBar({
 			map: map,

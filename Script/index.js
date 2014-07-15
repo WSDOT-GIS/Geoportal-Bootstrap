@@ -430,8 +430,9 @@
 			 * @param {PrintResponse} response
 			 */
 			printTask.on("complete", function (response) {
+				printUI.form.querySelector("button[type=submit]").disabled = false;
 				if (response && response.result && response.result.url) {
-					printUI.addResult(response.result.url);
+					printUI.addResult(response.result.url, (new Date()).toTimeString());
 				}
 			});
 
@@ -439,6 +440,7 @@
 			 * @param {Error} error
 			 */
 			printTask.on("error", function (error) {
+				printUI.form.querySelector("button[type=submit]").disabled = false;
 				console.error("print error", error);
 			});
 
@@ -456,6 +458,7 @@
 				printParameters.template = template;
 
 				printTask.execute(printParameters);
+				printUI.form.querySelector("button[type=submit]").disabled = true;
 
 				return false;
 			};

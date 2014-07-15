@@ -175,15 +175,20 @@
 	}
 
 	PrintUI.prototype.addResult = function (url, label) {
-		var li, a;
+		var li, a, span;
 		label = label || "Printout";
 		li = document.createElement("li");
 		li.classList.add("print-ui-results-list-item");
 		li.classList.add("list-group-item");
+
 		a = document.createElement("a");
 		a.href = url;
 		a.target = "_blank";
-		a.textContent = label;
+		span = document.createElement("span");
+		span.setAttribute("class", "glyphicon glyphicon-file");
+		a.appendChild(span);
+		a.appendChild(document.createTextNode(" " + label));
+
 		li.appendChild(a);
 		this.resultsList.appendChild(li);
 	};

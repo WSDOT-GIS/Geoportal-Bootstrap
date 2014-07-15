@@ -31,9 +31,13 @@
 		"layerList",
 		"elc-controls",
 		"LayerFactory",
+		"print-tool/print-ui",
+		"esri/tasks/PrintTask",
+		"esri/tasks/PrintParameters",
+		"esri/tasks/PrintTemplate",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, config) {
 		"use strict";
 		var map, legend, layerList;
 
@@ -400,5 +404,63 @@
 		// Check all of the checkboxes that have defaultVisibility data properties set to true.
 		map.on("load", turnOnDefaultLayers);
 
+		// Set up print capability.
+		(function () {
+			var printUI, printTask, printUrl;
+			printUrl = "http://www.wsdot.wa.gov/geoservices/ArcGIS/rest/services/Utilities/PrintingTools/GPServer/Export Web Map Task";
+			// Create the UI.
+			printUI = new PrintUI(printUrl);
+			document.getElementById("print").appendChild(printUI.form);
+			document.getElementById("print").appendChild(printUI.resultsList);
+
+			// Create the print task
+			printTask = new PrintTask(printUrl);
+
+			/**
+			 * @typedef {PrintResult}
+			 * @property {string} url
+			 */
+
+			/**
+			 * @typedef {PrintResponse}
+			 * @property {PrintResult} result
+			 * @property {PrintTask} target
+			 */
+
+			/**
+			 * @param {PrintResponse} response
+			 */
+			printTask.on("complete", function (response) {
+				if (response && response.result && response.result.url) {
+					printUI.addResult(response.result.url);
+				}
+			});
+
+			/**
+			 * @param {Error} error
+			 */
+			printTask.on("error", function (error) {
+				console.log("print error", error);
+			});
+
+			// Setup print from submit event.
+			printUI.form.onsubmit = function () {
+				var printParameters = new PrintParameters();
+				printParameters.map = map;
+				var template = new PrintTemplate();
+				template.format = "PDF";
+				template.layout = printUI.getSelectedTempalteName();
+				template.layoutOptions = {
+					//authorText: printUI.getAuthor(),
+					titleText: printUI.form.querySelector("input[name=title]").value
+				};
+				printParameters.template = template;
+
+				printTask.execute(printParameters);
+
+				return false;
+			};
+
+		}());
 	});
 }());

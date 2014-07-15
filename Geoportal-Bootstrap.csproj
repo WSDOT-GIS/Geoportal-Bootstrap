@@ -60,6 +60,7 @@
     <Content Include="Script\index.js" />
     <Content Include="Script\layer-list.js" />
     <Content Include="Script\LayerFactory\LayerFactory.js" />
+    <Content Include="Script\print-tool\print-ui.js" />
     <Content Include="Style\index.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

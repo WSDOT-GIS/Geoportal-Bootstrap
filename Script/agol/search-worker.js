@@ -46,6 +46,11 @@ function getFullThumbnailUrl(item, propertyName) {
 function sendSearchResultMessage(e) {
 	var response;
 	response = e.target.response;
+	// Some browsers (e.g., IE) return a string instead of an object (ignoring the requested return type).
+	// In this case, parse the JSON string.
+	if (typeof response === "string") {
+		response = JSON.parse(response);
+	}
 	response.results.forEach(function (result) {
 		result.thumbnail = getFullThumbnailUrl(result, "thumbnail");
 	});

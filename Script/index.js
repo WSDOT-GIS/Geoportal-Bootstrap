@@ -237,7 +237,7 @@
 					opacityButton.setAttribute("class", "btn btn-default layer-opacity");
 					opacityButton.disabled = true;
 					span = document.createElement("span");
-					span.setAttribute("class", "glyphicon glyphicon-eye-close");
+					span.setAttribute("class", "glyphicon glyphicon-adjust");
 					opacityButton.appendChild(span);
 					parent.appendChild(opacityButton);
 				}
@@ -281,19 +281,21 @@
 			function toggleButtonLayer(evt) {
 				var button, layer, iconSpan;
 				button = evt.target;
-				if (button) {
+				if (button && button.dataset && button.dataset.layerId) {
 					layer = theMap.getLayer(button.dataset.layerId);
-					iconSpan = button.querySelector("span");
-					if (layer.visible) {
-						layer.hide();
-						iconSpan.classList.remove("glyphicon-check");
-						iconSpan.classList.add("glyphicon-unchecked");
-						iconSpan.nextSibling.textContent = " Show";
-					} else {
-						layer.show();
-						iconSpan.classList.add("glyphicon-check");
-						iconSpan.classList.remove("glyphicon-unchecked");
-						iconSpan.nextSibling.textContent = " Hide";
+					if (layer) {
+						iconSpan = button.querySelector("span");
+						if (layer.visible) {
+							layer.hide();
+							iconSpan.classList.remove("glyphicon-eye-open");
+							iconSpan.classList.add("glyphicon-eye-close");
+							iconSpan.nextSibling.textContent = " Show";
+						} else {
+							layer.show();
+							iconSpan.classList.add("glyphicon-eye-open");
+							iconSpan.classList.remove("glyphicon-eye-close");
+							iconSpan.nextSibling.textContent = " Hide";
+						}
 					}
 				}
 			}
@@ -311,7 +313,7 @@
 					button.innerHTML = "";
 					span = document.createElement("span");
 					span.classList.add("glyphicon");
-					span.classList.add(layer.visible ? "glyphicon-check" : "glyphicon-unchecked");
+					span.classList.add(layer.visible ? "glyphicon-eye-open" : "glyphicon-eye-close");
 					button.appendChild(span);
 					button.onclick = toggleButtonLayer;
 					button.disabled = false;

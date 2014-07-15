@@ -270,6 +270,7 @@ define([
 			function createListItem(layerDef) {
 				var li, label, input, textNode;
 				li = document.createElement("li");
+				li.classList.add("list-group-item");
 				label = document.createElement("label");
 				li.appendChild(label);
 				input = document.createElement("input");

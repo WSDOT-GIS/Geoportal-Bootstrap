@@ -340,7 +340,6 @@
 			searchWorker.addEventListener("message", function (e) {
 				var resultsDiv, response, table;
 				response = e.data.response;
-				console.log("worker message", response);
 				resultsDiv = document.getElementById("agolSearchResults");
 				table = createTableOfSearchResults(response.results);
 				resultsDiv.appendChild(table);
@@ -440,7 +439,7 @@
 			 * @param {Error} error
 			 */
 			printTask.on("error", function (error) {
-				console.log("print error", error);
+				console.error("print error", error);
 			});
 
 			// Setup print from submit event.
@@ -451,7 +450,7 @@
 				template.format = "PDF";
 				template.layout = printUI.getSelectedTempalteName();
 				template.layoutOptions = {
-					//authorText: printUI.getAuthor(),
+					authorText:printUI.form.querySelector("input[name=author]").value,
 					titleText: printUI.form.querySelector("input[name=title]").value
 				};
 				printParameters.template = template;

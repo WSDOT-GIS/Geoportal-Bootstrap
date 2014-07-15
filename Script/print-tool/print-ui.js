@@ -9,8 +9,23 @@
 	}
 }(this, function () {
 
-	function createDateBasedId(prefix) {
-		return [prefix, Date.now()].join("");
+	/**
+	 * Checks the document to see if a given id already exists in the document.
+	 * If the id already exists, the output will be the input id with a number 
+	 * appended to it to make it unique. Otherwise the original id will be returned.
+	 * @param {string} id
+	 * @returns {string}
+	 */
+	function ensureUniqueId(id) {
+		var existingElement = document.getElementById(id), newId, i = 0;
+		if (!existingElement) {
+			return id;
+		}
+		while (existingElement) {
+			newId = id + i;
+			existingElement = document.getElementById(newId);
+		}
+		return newId;
 	}
 
 	/**
@@ -52,7 +67,6 @@
 					svcInfo = JSON.parse(svcInfo);
 				}
 				parameters = svcInfo.parameters;
-				console.log("Print service info", svcInfo);
 
 				for (var i = 0, l = parameters.length; i < l; i += 1) {
 					if (!!templates && !!formats) {
@@ -80,7 +94,7 @@
 			div = document.createElement("div");
 			div.classList.add("form-group");
 			form.appendChild(div);
-			id = createDateBasedId("selectElement");
+			id = ensureUniqueId(id);
 			label = document.createElement("label");
 			label.htmlFor = id;
 			label.textContent = labelText;
@@ -110,7 +124,7 @@
 			div = document.createElement("div");
 			div.classList.add("form-group");
 			form.appendChild(div);
-			id = createDateBasedId(id);
+			id = ensureUniqueId(id);
 			label = document.createElement("label");
 			label.textContent = labelText;
 			label.htmlFor = id;

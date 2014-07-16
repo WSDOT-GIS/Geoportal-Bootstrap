@@ -153,3 +153,8 @@ body {
 .agol-snippet {
 	font-size: 0.85em;
 }
+
+/* This is to fix a weird esri + bootstrap bug that causes basemap thumbnails to "move around".*/
+.esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
+	margin: 1px;
+}

@@ -172,6 +172,7 @@
 
 		this.form = form;
 		this.resultsList = resultsList;
+		this.submitButton = submitButton;
 	}
 
 	PrintUI.prototype.addResult = function (url, label) {

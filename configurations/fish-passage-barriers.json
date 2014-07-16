@@ -46,7 +46,7 @@
 			"title": "Rivers and Lakes"
 		},
 		{
-			"url": "http://hqolymgis21t/ArcGIS/rest/services/FunctionalClass/WSDOTFunctionalClassBaseMap/MapServer/25",
+			"url": "http://www.wsdot.wa.gov/geosvcs/ArcGIS/rest/services/FunctionalClass/WSDOTFunctionalClassBaseMap/MapServer/25",
 			"type": "FeatureLayer",
 			"id":  "state_boundary",
 			"title":  "State Boundary",

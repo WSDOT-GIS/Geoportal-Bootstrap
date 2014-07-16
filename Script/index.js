@@ -35,19 +35,17 @@
 		"esri/tasks/PrintTask",
 		"esri/tasks/PrintParameters",
 		"esri/tasks/PrintTemplate",
+		"esri/tasks/LegendLayer",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, LegendLayer, config) {
 		"use strict";
 		var map, legend, layerList;
-
-
-
-
 
 		// Add to the list of CORS enabled servers.
 		(function (servers) {
 			servers.push("wsdot.wa.gov");
+			servers.push("fortress.wa.gov");
 		}(esriConfig.defaults.io.corsEnabledServers));
 
 		config = JSON.parse(config);
@@ -408,6 +406,31 @@
 		// Set up print capability.
 		(function () {
 			var printUI, printTask, printUrl;
+
+			/**
+			 * Creates an array of LegendLayers of all layers currently visible in the map.
+			 * @param {esri.Map} map
+			 * @returns {esri.tasks.LegendLayer[]}
+			 */
+			function getLegendLayersFromMap(map) {
+				var layer, legendLayer, output = [];
+				for (var i = 0, l = map.layerIds.length; i < l; i += 1) {
+					layer = map.getLayer(map.layerIds[i]);
+					if (layer.visible && layer.visibleAtMapScale) {
+						legendLayer = new LegendLayer();
+						legendLayer.layerId = layer.id;
+						if (layer.visibleLayers) {
+							legendLayer.subLayerIds = layer.visibleLayers;
+						}
+						output.push(legendLayer);
+					}
+				}
+
+				// Return null if the output array has no elements.
+				return output.length > 0 ? output : null;
+			}
+
+
 			printUrl = "http://www.wsdot.wa.gov/geoservices/ArcGIS/rest/services/Utilities/PrintingTools/GPServer/Export Web Map Task";
 			// Create the UI.
 			printUI = new PrintUI(printUrl);
@@ -432,7 +455,7 @@
 			 * @param {PrintResponse} response
 			 */
 			printTask.on("complete", function (response) {
-				printUI.form.querySelector("button[type=submit]").disabled = false;
+				printUI.submitButton.disabled = null;
 				if (response && response.result && response.result.url) {
 					printUI.addResult(response.result.url, (new Date()).toTimeString());
 				}
@@ -442,7 +465,7 @@
 			 * @param {Error} error
 			 */
 			printTask.on("error", function (error) {
-				printUI.form.querySelector("button[type=submit]").disabled = false;
+				printUI.submitButton.disabled = null;
 				console.error("print error", error);
 			});
 
@@ -455,12 +478,14 @@
 				template.layout = printUI.getSelectedTempalteName();
 				template.layoutOptions = {
 					authorText:printUI.form.querySelector("input[name=author]").value,
-					titleText: printUI.form.querySelector("input[name=title]").value
+					titleText: printUI.form.querySelector("input[name=title]").value,
+					legendLayers: getLegendLayersFromMap(map)
 				};
 				printParameters.template = template;
 
 				printTask.execute(printParameters);
-				printUI.form.querySelector("button[type=submit]").disabled = true;
+				printUI.submitButton.disabled = true;
+
 
 				return false;
 			};

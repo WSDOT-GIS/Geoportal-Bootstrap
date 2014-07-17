@@ -183,6 +183,7 @@
 			showAttribution: true
 		});
 
+		// AGOL Search Setup
 		(function (theMap) {
 			var searchWorker, layerFactory;
 
@@ -198,45 +199,97 @@
 				function createOptionButtons(parent) {
 					var infoButton, sublayersButton, opacityButton, span;
 
+					/**
+					 * Creates a link that appears as a button.
+					 * @param {string} glyphiconClass - Bootstrap glyphicon class name.
+					 * @param {string} href - The URL that the link will go to.
+					 * @param {string} title - ToolTip text for the link.
+					 * @param {string} [target='_blank']
+					 * @returns {HTMLAnchorElement}
+					 */
+					function createLinkButton(glyphiconClass, href, title, target) {
+						var link, span;
+						// Info (this is actually a link)
+						link = document.createElement("a");
+						link.href = href;
+						link.target = target || "_blank";
+						link.title = title;
+						link.setAttribute("class", "btn btn-default layer-info");
+						if (glyphiconClass) {
+							span = document.createElement("span");
+							span.setAttribute("class", "glyphicon " + glyphiconClass);
+							link.appendChild(span);
+						}
+						return link;
+					}
+
+					/**
+					 * Creates a button
+					 * @param {string} [title] - ToolTip text for the link.  If `glypiconClass` is not provided, this text will be used as the button's textContent.
+					 * @param {string} [value] - Value attribute.
+					 * @param {string} [glyphiconClass] - Bootstrap glyphicon class name.
+					 * @param {string[]} [classes] - CSS class names to add to the buttons class list.
+					 * @param {boolean} [disabled=false] - Set to true value to have the button be disabled.
+					 * @returns {HTMLButtonElement}
+					 */
+					function createButton(title, value, glyphiconClass, classes, disabled) {
+						var button;
+						button = document.createElement("button");
+						button.type = "button";
+						if (title) {
+							button.title = title;
+						}
+
+						if (value) {
+							button.value = value;
+						}
+						button.setAttribute("class", "btn");
+						if (classes) {
+							classes.forEach(function (className) {
+								button.classList.add(className);
+							});
+						}
+						if (disabled) {
+							button.disabled = true;
+						}
+
+						if (glyphiconClass) {
+							span = document.createElement("span");
+							span.setAttribute("class", "glyphicon " + glyphiconClass);
+							button.appendChild(span);
+						} else if (title) {
+							button.innerText = title;
+						}
+						return button;
+					}
+
 					// Add
-					addButton = document.createElement("button");
-					addButton.type = "button";
-					addButton.innerText = "Add to Map";
-					addButton.setAttribute("class", "btn btn-primary");
-					addButton.value = item.url;
-					addButton.setAttribute("data-type", item.type);
+					////addButton = document.createElement("button");
+					////addButton.type = "button";
+					////addButton.innerText = "Add to Map";
+					////addButton.setAttribute("class", "btn btn-primary");
+					////addButton.value = item.url;
+					////addButton.setAttribute("data-type", item.type);
+					addButton = createButton("Add to Map", item.url, null, ["btn-primary"], false);
 					addButton.onclick = onAddClick;
 					parent.appendChild(addButton);
 
 					// Info (this is actually a link)
-					infoButton = document.createElement("a");
-					infoButton.href = "http://wsdot.maps.arcgis.com/home/item.html?id=" + item.id;
-					infoButton.target = "layerInfo";
-					infoButton.title = "Get information about this layer";
-					infoButton.setAttribute("class", "btn btn-default layer-info");
-					span = document.createElement("span");
-					span.setAttribute("class", "glyphicon glyphicon-info-sign");
-					infoButton.appendChild(span);
+					infoButton = createLinkButton("glyphicon-info-sign", "http://wsdot.maps.arcgis.com/home/item.html?id=" + item.id, "Get information about this layer", "layerInfo");
 					parent.appendChild(infoButton);
 
 					// Sublayers
-					sublayersButton = document.createElement("button");
-					sublayersButton.title = "Control the visibility of this layer's sublayers.";
-					sublayersButton.setAttribute("class", "btn btn-default layer-sublayers");
-					sublayersButton.disabled = true;
-					span = document.createElement("span");
-					span.setAttribute("class", "glyphicon glyphicon-th-list");
-					sublayersButton.appendChild(span);
+					sublayersButton = createButton("Control the visibility of this layer's sublayers.", null, "glyphicon-th-list", [
+						"btn-default",
+						"layer-sublayers"
+					], true);
 					parent.appendChild(sublayersButton);
 
 					// Opacity
-					opacityButton = document.createElement("button");
-					opacityButton.title = "Control the layer's opacity.";
-					opacityButton.setAttribute("class", "btn btn-default layer-opacity");
-					opacityButton.disabled = true;
-					span = document.createElement("span");
-					span.setAttribute("class", "glyphicon glyphicon-adjust");
-					opacityButton.appendChild(span);
+					opacityButton = createButton("Control the layer's opacity.", null, "glyphicon-adjust", [
+						"btn-default",
+						"layer-opacity"
+					], true);
 					parent.appendChild(opacityButton);
 				}
 
@@ -346,6 +399,7 @@
 			});
 			searchWorker.postMessage({ operation: "search" });
 		}(map));
+		// End AGOL Search Setup
 
 		(new ScaleBar({
 			map: map,

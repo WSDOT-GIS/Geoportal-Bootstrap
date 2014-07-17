@@ -40,28 +40,28 @@
 			<div class="col-sm-5 col-md-3 sidebar-offcanvas" id="sidebar">
 				<div class="panel">
 					<ul id="tabs" class="nav nav-tabs">
-						<li class="active"><a href="#legendPane"><span class="glyphicon glyphicon-list-alt" title="Legend"></span></a></li>
+						<li><a href="#legendPane"><span class="glyphicon glyphicon-list-alt" title="Legend"></span></a></li>
 						<li><a href="#basemapsPane"><span class="glyphicon glyphicon-th-large" title="Basemaps"></span></a></li>
-						<li><a href="#layersPane"><span class="glyphicon glyphicon-list" title="Layers"></span></a></li>
+						<li class="active"><a href="#layersPane"><span class="glyphicon glyphicon-list" title="Layers"></span></a></li>
 						<li><a href="#elcPane"><span class="glyphicon glyphicon-road"></span></a></li>
 						<li><a href="#toolsPane"><span class="glyphicon glyphicon-wrench"></span></a></li>
 					</ul>
 					<div class="tab-content">
-						<div class="tab-pane active" id="legendPane">
+						<div class="tab-pane" id="legendPane">
 							<div id="legendWidget" class="claro"></div>
 						</div>
 						<div class="tab-pane" id="basemapsPane">
 							<div id="basemapGallery" class="claro"></div>
 						</div>
-						<div class="tab-pane" id="layersPane">
+						<div class="tab-pane active" id="layersPane">
 							<div class="panel-group" id="layersAccordion">
-								<div class="panel panel-default">
+								<div class="panel panel-default" id="layersPanelGroup">
 									<div class="panel-heading">
 										<h4 class="panel-title">
 											<a data-toggle="collapse" data-parent="#layersAccordion" href="#layersPanel">Layers</a>
 										</h4>
 									</div>
-									<div id="layersPanel" class="panel-collapse collapse in">
+									<div id="layersPanel" class="panel-collapse collapse">
 										<div class="panel-body">
 											<div id="layers"></div>
 										</div>
@@ -74,7 +74,7 @@
 											<a data-toggle="collapse" data-parent="#layersAccordion" href="#agolPanel">Add Data</a>
 										</h4>
 									</div>
-									<div id="agolPanel" class="panel-collapse collapse">
+									<div id="agolPanel" class="panel-collapse collapse in">
 										<div class="panel-body">
 											<div id="agolSearchResults"></div>
 										</div>

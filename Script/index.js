@@ -263,13 +263,7 @@
 						return button;
 					}
 
-					// Add
-					////addButton = document.createElement("button");
-					////addButton.type = "button";
-					////addButton.innerText = "Add to Map";
-					////addButton.setAttribute("class", "btn btn-primary");
-					////addButton.value = item.url;
-					////addButton.setAttribute("data-type", item.type);
+					// Add the Add button.
 					addButton = createButton("Add to Map", item.url, null, ["btn-primary"], false);
 					addButton.onclick = onAddClick;
 					parent.appendChild(addButton);

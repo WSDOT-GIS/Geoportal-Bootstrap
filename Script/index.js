@@ -36,9 +36,10 @@
 		"esri/tasks/PrintParameters",
 		"esri/tasks/PrintTemplate",
 		"esri/tasks/LegendLayer",
+		"map-identify-task",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, LegendLayer, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, LegendLayer, MapIdentifyTask, config) {
 		"use strict";
 		var map, legend, layerList;
 
@@ -181,6 +182,23 @@
 			center: [-120.80566406246835, 47.41322033015946],
 			zoom: 7,
 			showAttribution: true
+		});
+
+		var mapIdentifyTask = new MapIdentifyTask(map);
+
+		// Setup identify.
+		map.on("click", function (evt) {
+			console.log(evt);
+			var point = evt.mapPoint;
+			mapIdentifyTask.identify(point).then(function (response) {
+				var infoWindow = map.infoWindow;
+				var graphics = MapIdentifyTask.resultsToGraphics(response);
+				infoWindow.clearFeatures();
+				infoWindow.setFeatures(graphics);
+				infoWindow.show(point, {
+					closestFirst: true
+				});
+			});
 		});
 
 		// AGOL Search Setup

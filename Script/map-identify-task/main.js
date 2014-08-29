@@ -12,10 +12,11 @@ define([
 	// Match results: [full-match, map-server-url, layer-id or undefined]
 	var serverUrlRe = /((?:https?\:)?\/\/.+\/(?:(?:Map)|(?:Feature))Server)(?:\/(\d+))?/;
 
-	function MapIdentifyTask(map, tolerance) {
+	function MapIdentifyTask(map, tolerance, ignoredUrls) {
 		this.map = map;
 		this.tolerance = typeof tolerance === "number" ? tolerance : 5;
 		this._tasks = {};
+		this.ignoredUrls = ignoredUrls || null;
 		////this._htmlPopupTypes = {};
 	}
 
@@ -149,9 +150,12 @@ define([
 		var self = this;
 
 		visibleLayers.forEach(function (layer) {
-			var def = self._identifyForLayer(layer, geometry);
-			if (def) {
-				output[layer.id] = def;
+			var def;
+			if (!self.ignoredUrls || !self.ignoredUrls.test(layer.url)) {
+				def = self._identifyForLayer(layer, geometry);
+				if (def) {
+					output[layer.id] = def;
+				}
 			}
 		});
 

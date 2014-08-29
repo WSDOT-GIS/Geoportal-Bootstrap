@@ -184,11 +184,10 @@
 			showAttribution: true
 		});
 
-		var mapIdentifyTask = new MapIdentifyTask(map);
+		var mapIdentifyTask = new MapIdentifyTask(map, null, /\barcgisonline\b/i);
 
 		// Setup identify.
 		map.on("click", function (evt) {
-			console.log(evt);
 			var point = evt.mapPoint;
 			mapIdentifyTask.identify(point).then(function (response) {
 				var infoWindow = map.infoWindow;

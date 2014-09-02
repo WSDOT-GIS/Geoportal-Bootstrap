@@ -8,29 +8,87 @@ define([
 	"esri/InfoTemplate"
 ], function (all, Deferred, esriRequest, IdentifyTask, IdentifyParameters, InfoTemplate) {
 
+	/**
+	 * A module that creates MapIdentifyTasks.
+	 * @module MapIdentifyTask
+	 */
+
+	/**
+	 * @external Deferred
+	 * @see {@link http://dojotoolkit.org/reference-guide/dojo/Deferred.html Deferred}
+	 */
+
+	/**
+	 * @external Geometry
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/geometry-amd.html Geometry}
+	 */
+
+	/**
+	 * @external Graphic
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/graphic-amd.html Graphic}
+	 */
+
+	/**
+	 * @external IdentifyParameters
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/identifyparameters-amd.html IdentifyParameters}
+	 */
+
+	/**
+	 * @external IdentifyTask
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/identifytask-amd.html IdentifyTask}
+	 */
+
+	/**
+	 * @external Layer
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/layer-amd.html Layer}
+	 */
+
+	/**
+	 * @external Map
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/map-amd.html Map}
+	 */
+
+
 	// Matches a map service or map service layer URL.
 	// Match results: [full-match, map-server-url, layer-id or undefined]
 	var serverUrlRe = /((?:https?\:)?\/\/.+\/(?:(?:Map)|(?:Feature))Server)(?:\/(\d+))?/;
 
+	/**
+	 * A task that will execute multiple IdentifyTasks for the layers in a map.
+	 * @constructor
+	 * @param {external:Map} map
+	 * @param {number} [tolerance=5]
+	 * @param {RegExp} [ignoredUrls=null] - Any map services with URLs that match this RegExp will not participate in the map's Identify operation.
+	 */
 	function MapIdentifyTask(map, tolerance, ignoredUrls) {
+		/** @member {external:Map} */
 		this.map = map;
+		/** @member {number} */
 		this.tolerance = typeof tolerance === "number" ? tolerance : 5;
+		/** @member {Object.<string, TaskIdPair>} */
 		this._tasks = {};
+		/** @member {RegExp} */
 		this.ignoredUrls = ignoredUrls || null;
 		////this._htmlPopupTypes = {};
 	}
 
-
+	/**
+	 * A pair of task and optional layer ID. A layer ID will only be present for layer types where 
+	 * that would be applicable (e.g., FeatureLayer but not ArcGISDynamicMapServiceLayer).
+	 * @constructor
+	 * @param {external:IdentifyTask} task
+	 * @param {?number} [id] - Only certain layer types (e.g., FeatureLayer) will have an ID value.
+	 */
 	function TaskIdPair(task, id) {
-		/** @property {esri/tasks/IdentifyTask} */
+		/** @member {external:IdentifyTask} */
 		this.task = task;
-		/** @property {(number|null)} */
+		/** @member {?number} */
 		this.id = typeof id !== "number" ? null : id;
 	}
 
 	/**
 	 * Creates either an Identify or Query task. The type of task depends on the input layer type.
-	 * @param {esri/layers/Layer} layer
+	 * @param {external:Layer} layer
 	 * @returns {TaskIdPair}
 	 */
 	function createIdentifyTaskForLayer(layer) {
@@ -91,8 +149,8 @@ define([
 	/**
 	 * Gets a task for the specified layer. If corresponding task does not yet exist,
 	 * it will be created.
-	 * @param {esri/layers/Layer} layer
-	 * @returns {(esri/tasks/IdentifyTask|esri/tasks/QueryTask)}
+	 * @param {external:Layer} layer
+	 * @returns {TaskIdPair}
 	 */
 	MapIdentifyTask.prototype._getTaskForLayer = function (layer) {
 		var task;
@@ -108,6 +166,13 @@ define([
 		return this._tasks[layer.id];
 	};
 
+	/**
+	 * Creates identify parameters for a given map service layer and geometry.
+	 * @param {external:Layer} layer
+	 * @param {external:Geometry} geometry
+	 * @param {number} [id] - For feature layers, sublayer ID.
+	 * @returns {external:IdentifyParameters}
+	 */
 	MapIdentifyTask.prototype.createIdentifyParametersForLayer = function (layer, geometry, id) {
 		var parameters = new IdentifyParameters();
 		parameters.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
@@ -124,6 +189,12 @@ define([
 		return parameters;
 	};
 
+	/**
+	 * Runs the corresponding Identify task for a map service layer.
+	 * @param {external:Layer} layer
+	 * @param {external:Geometry} geometry
+	 * @returns {external:Deferred}
+	 */
 	MapIdentifyTask.prototype._identifyForLayer = function (layer, geometry) {
 		var taskIdPair = this._getTaskForLayer(layer);
 		var task, idParams, output;
@@ -136,8 +207,9 @@ define([
 	};
 
 	/**
-	 * @typedef {Object.<string, IdentifyResult[]>} MapIdentifyResults
+	 * @typedef {Object.<string, external:Deferred>} MapIdentifyResults
 	 * The property names correspond to the layer ids of layers in the map.
+	 * The Deferred value is the result of an Identify task.
 	 */
 
 	/**
@@ -164,6 +236,11 @@ define([
 	};
 
 
+	/**
+	 * Creates an HTML table of a graphic's attributes. Intended for use as an InfoTemplate's content generation function.
+	 * @param {external:Graphic} graphic
+	 * @returns {string}
+	 */
 	function createTableFromGraphic(graphic) {
 		var output = ["<table>"];
 		for (var name in graphic.attributes) {
@@ -179,6 +256,11 @@ define([
 	defaultInfoTemplate.setContent(createTableFromGraphic);
 	MapIdentifyTask.defaultInfoTemplate = defaultInfoTemplate;
 
+	/**
+	 * Extracts the feature portion of an identify result. Intended for use with the Array.prototype.map function.
+	 * @param {IdentifyResult} idResult
+	 * @returns {external:Graphic}
+	 */
 	function getFeatureFromIdResult(idResult) {
 		var feature = null;
 		if (idResult && idResult.feature) {
@@ -194,7 +276,7 @@ define([
 	/**
 	 * Converts the results of MapIdentifyTask.identify into an array of graphics.
 	 * @param {MapIdentifyResults} results
-	 * @returns {esri/Graphic[]}
+	 * @returns {external:Graphic[]}
 	 */
 	MapIdentifyTask.resultsToGraphics = function (results) {
 		var idResultsArray, output;

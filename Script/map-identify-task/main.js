@@ -14,6 +14,11 @@ define([
 	 */
 
 	/**
+	 * @external dojo/promise/Promise
+	 * @see {@link http://dojotoolkit.org/reference-guide/1.10/dojo/promise/Promise.html dojo/promise/Promise
+	 */
+
+	/**
 	 * @external Deferred
 	 * @see {@link http://dojotoolkit.org/reference-guide/dojo/Deferred.html Deferred}
 	 */
@@ -34,6 +39,11 @@ define([
 	 */
 
 	/**
+	 * @external IdentifyResult
+	 * @see {@link https://developers.arcgis.com/javascript/jsapi/identifyresult-amd.html IdentifyResult}
+	 */
+
+	/**
 	 * @external IdentifyTask
 	 * @see {@link https://developers.arcgis.com/javascript/jsapi/identifytask-amd.html IdentifyTask}
 	 */
@@ -46,6 +56,11 @@ define([
 	/**
 	 * @external Map
 	 * @see {@link https://developers.arcgis.com/javascript/jsapi/map-amd.html Map}
+	 */
+
+	/**
+	 * @external RestApiLayer
+	 * @see {@link http://resources.arcgis.com/en/help/arcgis-rest-api/#/Layer_Table/02r3000000zr000000/ Layer / Table}
 	 */
 
 
@@ -69,7 +84,8 @@ define([
 		this._tasks = {};
 		/** @member {RegExp} */
 		this.ignoredUrls = ignoredUrls || null;
-		////this._htmlPopupTypes = {};
+		/** @member {Object.<string, ({RestApiLayer}|{Object.<string, RestApiLayer>})>}*/
+		this._layerInfos = {};
 	}
 
 	/**
@@ -111,28 +127,99 @@ define([
 	// TODO: Check to see if layers actually SUPPORT identify.
 	// TODO: Use services' HTML popups if they have them.
 
-	////function requestLayerInfo(layer) {
-	////	var deferred = new Deferred();
-	////	var url = typeof layer === "string" ? layer : layer.url || null;
-	////	if (!url) {
-	////		deferred.reject({ message: "Could not deterine URL", layer: layer });
-	////	}
-	////	if (urlIsMapServerLayer(layer.url)) {
-	////		esriRequest({
-	////			url: layer.url,
-	////			content: {
-	////				f: "json"
-	////			}
-	////		}).then(function (response) {
-	////			deferred = response;
-	////		});
-	////	} else if (urlIsMapServer(layer.url)) {
-	////		// TODO: Query all non-group sublayers.
-	////		throw new Error("Not implemented");
-	////	}
+	/**
+	 * Gets information about a layer from the REST API.
+	 * @param {external:Layer} layer
+	 * @returns {external:dojo/promise/Promise}
+	 */
+	function requestLayerInfo(layer) {
+		var promise;
+		var url = typeof layer === "string" ? layer : layer.url || null;
+		var match;
+		var deferreds;
+		if (!url) {
+			promise = new Deferred();
+			promise.reject({ message: "Could not deterine URL", layer: layer });
+		}
+		else {
+			match = url.match(serverUrlRe);
+			// URL is for a map service sub layer.
+			if (match) { // Valid map service or map service layer URL.
+				if (match[2]) { // Layer ID is part of URL.
+					promise = esriRequest({
+						url: url,
+						content: {
+							f: "json"
+						}
+					});
+				} else if (layer.layerInfos) {
+					deferreds = {};
+					layer.layerInfos.forEach(function (layerInfo) {
+						var subUrl;
+						if (!layerInfo.subLayerIds) { // Only non-group layers...
+							// Create the sublayer's URL.
+							subUrl = [url, layerInfo.id].join("/");
+							// Request the information about the sublayer's URL.
+							// Keyed by layerID_sublayerID. (E.g., "mylayer_0": {Promise object})
+							deferreds[String(layerInfo.id)] = esriRequest({
+								url: subUrl,
+								content: {
+									f: "json"
+								}
+							});
+						}
+					});
+					promise = new Deferred();
+					all(deferreds).then(function (response) {
+						// Convert object with property names that are numbers as string into an array.
+						var output = [], re = /\d+$/, match;
+						for (var propName in response) {
+							if (response.hasOwnProperty(propName)) {
+								match = propName.match(re);
+								if (match) {
+									output[Number(match[0])] = response[propName];
+								}
+							}
+						}
+						promise.resolve(output);
+					}, function (error) {
+						promise.reject(error);
+					});
+				}
+			}
+		}
 
-	////	return deferred;
-	////}
+		// If the promise return object has not been initialized, create one and then reject it.
+		if (!promise) {
+			promise = new Deferred();
+			promise.reject({
+				message: "Could not retrieve information about the layer.",
+				layer: layer
+			});
+		}
+
+		return promise;
+	}
+
+	/**
+	 * 
+	 * @param {external:Layer} layer
+	 * @returns {external:dojo/promise/Promise}
+	 */
+	MapIdentifyTask.prototype.getLayerInfo = function (layer) {
+		var promise, self = this;
+		if (self._layerInfos[layer.id]) {
+			promise = new Deferred();
+			promise.resolve(self._layerInfos[layer.id]);
+		} else {
+			promise = requestLayerInfo(layer);
+			promise.then(function (/** {(RestApiLayer)|(Object.<string, RestApiLayer>)} */ response) {
+				self._layerInfos[layer.id] = response;
+			});
+		}
+
+		return promise;
+	};
 
 	////MapIdentifyTask.prototype.getHtmlPopupTypeForLayer = function (layer) {
 	////	var deferred;
@@ -207,14 +294,13 @@ define([
 	};
 
 	/**
-	 * @typedef {Object.<string, external:Deferred>} MapIdentifyResults
+	 * @typedef {Object.<string, external:IdentifyResult[]>} MapIdentifyResults
 	 * The property names correspond to the layer ids of layers in the map.
-	 * The Deferred value is the result of an Identify task.
 	 */
 
 	/**
 	 * Runs an Identify operation on all visible layers in the map.
-	 * @returns {MapIdentifyResults}
+	 * @returns {external:dojo/promise/Promise>} - When the promise is completed, the result object will be MapIdentifyResults.
 	 */
 	MapIdentifyTask.prototype.identify = function (geometry) {
 		var output = {};
@@ -232,7 +318,6 @@ define([
 				}
 			}
 		});
-
 
 		return all(output);
 	};

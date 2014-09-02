@@ -186,9 +186,11 @@
 
 		var mapIdentifyTask = new MapIdentifyTask(map, null, /\barcgisonline\b/i);
 
+
 		// Setup identify.
 		map.on("click", function (evt) {
 			var point = evt.mapPoint;
+
 			mapIdentifyTask.identify(point).then(function (response) {
 				var infoWindow = map.infoWindow;
 				var graphics = MapIdentifyTask.resultsToGraphics(response);

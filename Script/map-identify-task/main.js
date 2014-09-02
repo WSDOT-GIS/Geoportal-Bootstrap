@@ -218,12 +218,14 @@ define([
 	 */
 	MapIdentifyTask.prototype.identify = function (geometry) {
 		var output = {};
-		var visibleLayers = this.map.getLayersVisibleAtScale();
+		// Note that "visible" according to getLayersVisibleAtScale does not check to see if the visible
+		// property is set to true or false. This will be checked in the loop later.
+		var visibleLayers = this.map.getLayersVisibleAtScale(); 
 		var self = this;
 
 		visibleLayers.forEach(function (layer) {
 			var def;
-			if (!self.ignoredUrls || !self.ignoredUrls.test(layer.url)) {
+			if (layer.visible && (!self.ignoredUrls || !self.ignoredUrls.test(layer.url))) {
 				def = self._identifyForLayer(layer, geometry);
 				if (def) {
 					output[layer.id] = def;

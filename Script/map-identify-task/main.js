@@ -284,11 +284,30 @@ define([
 	 */
 	MapIdentifyTask.prototype._identifyForLayer = function (layer, geometry) {
 		var taskIdPair = this._getTaskForLayer(layer);
-		var task, idParams, output;
+		var task, idParams, output, taskDeferred, layerInfoDeferred, promise;
 		if (taskIdPair) {
 			task = taskIdPair.task;
 			idParams = this.createIdentifyParametersForLayer(layer, geometry, taskIdPair.id);
-			output = task.execute(idParams);
+			taskDeferred = task.execute(idParams);
+			layerInfoDeferred = this.getLayerInfo(layer);
+			output = new Deferred();
+			promise = all({
+				layerInfo: layerInfoDeferred,
+				results: taskDeferred
+			}).then(function (response) {
+				var layerInfos = response.layerInfo;
+				// Loop through all identify results.
+				// Add associated layer info to the results object.
+				response.results.forEach(function (result) {
+					var layerInfo = layerInfos[result.layerId];
+					if (layerInfo) {
+						result.layerInfo = layerInfo;
+					}
+				});
+				output.resolve(response.results);
+			}, function (error) {
+				output.reject(error);
+			});
 		}
 		return output || null;
 	};

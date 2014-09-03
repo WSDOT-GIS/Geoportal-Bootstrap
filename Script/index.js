@@ -191,8 +191,11 @@
 		map.on("click", function (evt) {
 			var point = evt.mapPoint;
 
-			mapIdentifyTask.identify(point).then(function (response) {
+			var promise = mapIdentifyTask.identify(point);
+
+			promise.then(function (response) {
 				var infoWindow = map.infoWindow;
+				console.debug("identify result", response);
 				var graphics = MapIdentifyTask.resultsToGraphics(response);
 				if (infoWindow.isShowing && infoWindow.features) {
 					graphics = graphics.concat(infoWindow.features);

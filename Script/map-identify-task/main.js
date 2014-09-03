@@ -146,26 +146,40 @@ define([
 			// URL is for a map service sub layer.
 			if (match) { // Valid map service or map service layer URL.
 				if (match[2]) { // Layer ID is part of URL.
-					promise = esriRequest({
+					promise = new Deferred();
+					esriRequest({
 						url: url,
 						content: {
 							f: "json"
 						}
+					}).then(function (result) {
+						result.url = url;
+						promise.resolve(result);
+					}, function (error) {
+						promise.reject(error);
 					});
 				} else if (layer.layerInfos) {
 					deferreds = {};
 					layer.layerInfos.forEach(function (layerInfo) {
-						var subUrl;
+						var subUrl, subDeferred;
 						if (!layerInfo.subLayerIds) { // Only non-group layers...
 							// Create the sublayer's URL.
 							subUrl = [url, layerInfo.id].join("/");
 							// Request the information about the sublayer's URL.
 							// Keyed by layerID_sublayerID. (E.g., "mylayer_0": {Promise object})
-							deferreds[String(layerInfo.id)] = esriRequest({
+							subDeferred = new Deferred();
+							deferreds[String(layerInfo.id)] = subDeferred;
+
+							esriRequest({
 								url: subUrl,
 								content: {
 									f: "json"
 								}
+							}).then(function (result) {
+								result.url = subUrl;
+								subDeferred.resolve(result);
+							}, function (err) {
+								subDeferred.reject(error);
 							});
 						}
 					});

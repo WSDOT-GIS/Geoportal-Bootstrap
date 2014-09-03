@@ -179,7 +179,7 @@ define([
 								result.url = subUrl;
 								subDeferred.resolve(result);
 							}, function (err) {
-								subDeferred.reject(error);
+								subDeferred.reject(err);
 							});
 						}
 					});

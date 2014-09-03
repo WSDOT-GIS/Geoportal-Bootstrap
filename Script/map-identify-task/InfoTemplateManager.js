@@ -14,7 +14,7 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 	/**
 	 * @constructor
 	 */
-	function InfoTemplateManager(defaultInfoTemplate) {
+	function InfoTemplateManager() {
 		/** @member {Object.<string, InfoTemplate[]>} */
 		this.infoTemplates = {};
 	}
@@ -39,7 +39,7 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 	}
 
 	function createInfoTemplateForLayerInfo(layerInfo) {
-		var popupType = layerInfo.htmlPopupType, infoTemplate, deferred;
+		var popupType = layerInfo.htmlPopupType, infoTemplate;
 
 		function getHtmlPopupContent(graphic) {
 			var objectIdFieldName = layerInfo.fields.filter(function(fieldInfo){

@@ -4,9 +4,8 @@ define([
 	"dojo/Deferred",
 	"esri/request",
 	"esri/tasks/IdentifyTask",
-	"esri/tasks/IdentifyParameters",
-	"esri/InfoTemplate"
-], function (all, Deferred, esriRequest, IdentifyTask, IdentifyParameters, InfoTemplate) {
+	"esri/tasks/IdentifyParameters"
+], function (all, Deferred, esriRequest, IdentifyTask, IdentifyParameters) {
 
 	/**
 	 * A module that creates MapIdentifyTasks.
@@ -235,18 +234,6 @@ define([
 		return promise;
 	};
 
-	////MapIdentifyTask.prototype.getHtmlPopupTypeForLayer = function (layer) {
-	////	var deferred;
-	////	if (this._htmlPopupTypes[layer.id]) {
-	////		deferred = new Deferred();
-	////		deferred.resolve(this._htmlPopupTypes[layer.id]);
-	////	} else {
-	////		deferred = requestHtmlPopupType(layer);
-	////	}
-
-	////	return deferred;
-	////};
-
 	/**
 	 * Gets a task for the specified layer. If corresponding task does not yet exist,
 	 * it will be created.
@@ -353,61 +340,6 @@ define([
 		});
 
 		return all(output);
-	};
-
-
-	/**
-	 * Creates an HTML table of a graphic's attributes. Intended for use as an InfoTemplate's content generation function.
-	 * @param {external:Graphic} graphic
-	 * @returns {string}
-	 */
-	function createTableFromGraphic(graphic) {
-		var output = ["<table>"];
-		for (var name in graphic.attributes) {
-			if (graphic.attributes.hasOwnProperty(name)) {
-				output.push("<tr><th>", name, "</th><td>", graphic.attributes[name], "</td></tr>");
-			}
-		}
-		output.push("</table>");
-		return output.join("");
-	}
-
-	var defaultInfoTemplate = new InfoTemplate();
-	defaultInfoTemplate.setContent(createTableFromGraphic);
-	MapIdentifyTask.defaultInfoTemplate = defaultInfoTemplate;
-
-	/**
-	 * Extracts the feature portion of an identify result. Intended for use with the Array.prototype.map function.
-	 * @param {IdentifyResult} idResult
-	 * @returns {external:Graphic}
-	 */
-	function getFeatureFromIdResult(idResult) {
-		var feature = null;
-		if (idResult && idResult.feature) {
-			feature = idResult.feature;
-			if (!feature.infoTemplate) {
-				feature.infoTemplate = defaultInfoTemplate;
-			}
-		}
-		return feature;
-	}
-
-
-	/**
-	 * Converts the results of MapIdentifyTask.identify into an array of graphics.
-	 * @param {MapIdentifyResults} results
-	 * @returns {external:Graphic[]}
-	 */
-	MapIdentifyTask.resultsToGraphics = function (results) {
-		var idResultsArray, output;
-		for (var layerName in results) {
-			if (results.hasOwnProperty(layerName)) {
-				idResultsArray = results[layerName];
-				idResultsArray = idResultsArray.map(getFeatureFromIdResult);
-				output = output ? output.concat(idResultsArray) : idResultsArray;
-			}
-		}
-		return output || null;
 	};
 
 	return MapIdentifyTask;

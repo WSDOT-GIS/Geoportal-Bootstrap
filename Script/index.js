@@ -37,9 +37,10 @@
 		"esri/tasks/PrintTemplate",
 		"esri/tasks/LegendLayer",
 		"map-identify-task",
+		"map-identify-task/InfoTemplateManager",
 		"dojo/text!" + getConfigPath(),
 		"dojo/domReady!"
-	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, LegendLayer, MapIdentifyTask, config) {
+	], function (require, esriConfig, Map, Legend, BasemapGallery, ScaleBar, LayerList, ElcControls, LayerFactory, PrintUI, PrintTask, PrintParameters, PrintTemplate, LegendLayer, MapIdentifyTask, InfoTemplateManager, config) {
 		"use strict";
 		var map, legend, layerList;
 
@@ -186,6 +187,7 @@
 
 		var mapIdentifyTask = new MapIdentifyTask(map, null, /\barcgisonline\b/i);
 
+		var infoTemplateManager = new InfoTemplateManager();
 
 		// Setup identify.
 		map.on("click", function (evt) {
@@ -196,7 +198,7 @@
 			promise.then(function (response) {
 				var infoWindow = map.infoWindow;
 				console.debug("identify result", response);
-				var graphics = MapIdentifyTask.resultsToGraphics(response);
+				var graphics = infoTemplateManager.mapIdentifyResultsToGraphics(response);
 				if (infoWindow.isShowing && infoWindow.features) {
 					graphics = graphics.concat(infoWindow.features);
 				}

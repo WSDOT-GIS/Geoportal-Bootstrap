@@ -12,6 +12,11 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 	 */
 
 	/**
+	 * @external RestApiLayer
+	 * @see {@link http://resources.arcgis.com/en/help/arcgis-rest-api/#/Layer_Table/02r3000000zr000000/ Layer / Table}
+	 */
+
+	/**
 	 * @constructor
 	 */
 	function InfoTemplateManager() {
@@ -38,6 +43,14 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 		return output.join("");
 	}
 
+	function getHtmlBodyContent(htmlPopupResponse) {
+		var parser = new DOMParser();
+		var doc = parser.parseFromString(htmlPopupResponse.content, "text/html");
+		var body = doc.querySelector("body");
+
+		return body.html;
+	}
+
 	function createInfoTemplateForLayerInfo(layerInfo) {
 		var popupType = layerInfo.htmlPopupType, infoTemplate;
 
@@ -59,16 +72,20 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 						f: format,
 					}
 				}).then(function (htmlPopupResponse) {
-					deferred.resolve(htmlPopupResponse.content);
+					deferred.resolve(getHtmlBodyContent(htmlPopupResponse.content));
 				});
 			} else {
-				deferred = esriRequest({
+				deferred = new Deferred();
+				esriRequest({
 					url: url,
 					content: {
 						f: format,
-						handleAs: "text"
-					}
+					},
+					handleAs: "text"
+				}).then(function (html) {
+					deferred.resolve(getHtmlBodyContent(html));
 				});
+
 			}
 
 			return deferred;
@@ -78,19 +95,21 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 		// set the title to show the display field.
 		infoTemplate.setTitle(["${", layerInfo.displayField, "}"].join(""));
 
-		if (popupType === "esriServerHTMLPopupTypeAsHTMLText" || popupType === "esriServerHTMLPopupTypeAsURL") {
-			infoTemplate.setContent(getHtmlPopupContent);
-		} else {
-			infoTemplate.setContent(createContentTable(layerInfo));
-		}
+		////if (popupType === "esriServerHTMLPopupTypeAsHTMLText" || popupType === "esriServerHTMLPopupTypeAsURL") {
+		////	infoTemplate.setContent(getHtmlPopupContent);
+		////} else {
+		////	infoTemplate.setContent(createContentTable(layerInfo));
+		////}
+		infoTemplate.setContent(createContentTable(layerInfo));
 
 		return infoTemplate;
 	}
 
 	/**
-	 * 
-	 * @param {string} layerId - The unique identifier of a map's layer.
-	 * @param {Object} layerInfo - Information about a layer, specified by a map layer object.
+	 * Gets an InfoTemplate for a layer, and creates one if one does not already exist for that layer.
+	 * @param {RestApiLayer} layerInfo - Information about a layer, specified by a map layer object.
+	 * @param {string} layerInfo.url - URL of the layer.
+	 * @returns {InfoTemplate}
 	 */
 	InfoTemplateManager.prototype.getInfoTemplate = function (layerInfo) {
 		var template;
@@ -104,6 +123,46 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 		}
 
 		return template;
+	};
+
+	/**
+	 * Extracts the feature portion of an identify result. Intended for use with the Array.prototype.map function.
+	 * @param {IdentifyResult} idResult
+	 * @returns {external:Graphic}
+	 */
+	InfoTemplateManager.prototype._getFeatureFromIdResult = function (idResult) {
+		var feature = null;
+		if (idResult && idResult.feature) {
+			feature = idResult.feature;
+			if (!feature.infoTemplate) {
+				feature.infoTemplate = this.getInfoTemplate(idResult.layerInfo);
+			}
+		}
+		return feature;
+	};
+
+	/**
+	 * @typedef {Object.<string, external:IdentifyResult[]>} MapIdentifyResults
+	 * The property names correspond to the layer ids of layers in the map.
+	 */
+
+	/**
+	 * Converts the results of MapIdentifyTask.ide
+	 * ntify into an array of graphics.
+	 * @param {MapIdentifyResults} results
+	 * @returns {external:Graphic[]}
+	 */
+	InfoTemplateManager.prototype.mapIdentifyResultsToGraphics = function (results) {
+		var idResultsArray, output, self = this, mapper;
+		mapper = function (result) { return self._getFeatureFromIdResult(result); };
+		for (var layerName in results) {
+			if (results.hasOwnProperty(layerName)) {
+				idResultsArray = results[layerName];
+				idResultsArray = idResultsArray.map(mapper);
+				output = output ? output.concat(idResultsArray) : idResultsArray;
+			}
+		}
+		return output || null;
 	};
 	
 

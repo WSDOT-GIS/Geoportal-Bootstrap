@@ -26,16 +26,20 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 
 	function createContentTable(layerInfo) {
 		var output = ["<table>"];
+		var fieldTypesToSkip = /(?:(?:OID)|(?:Geometry))$/i;
+		var fieldNamesToSkip = /^Shape.\w+\(\)$/i;
 
 		layerInfo.fields.forEach(function (fieldInfo) {
-			output.push("<tr><th>", fieldInfo.alias || fieldInfo.name, "<td");
-			if (fieldInfo.type) {
-				output.push(" data-type='", fieldInfo.type, "' ");
+			if (!fieldTypesToSkip.test(fieldInfo.type) && !fieldNamesToSkip.test(fieldInfo.name)) {
+				output.push("<tr><th>", fieldInfo.alias || fieldInfo.name, "<td");
+				if (fieldInfo.type) {
+					output.push(" data-type='", fieldInfo.type, "' ");
+				}
+				if (fieldInfo.length) {
+					output.push(" data-length='", fieldInfo.length, "' ");
+				}
+				output.push(">${", fieldInfo.name, "}</td></tr>");
 			}
-			if (fieldInfo.length) {
-				output.push(" data-length='", fieldInfo.length, "' ");
-			}
-			output.push(">${", fieldInfo.name, "}</td></tr>");
 		});
 
 		output.push("</table>");
@@ -54,6 +58,8 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 	function createInfoTemplateForLayerInfo(layerInfo) {
 		var popupType = layerInfo.htmlPopupType, infoTemplate;
 
+
+		// TODO: Make this work.
 		function getHtmlPopupContent(graphic) {
 			var objectIdFieldName = layerInfo.fields.filter(function(fieldInfo){
 				return fieldInfo.type === "esriFieldTypeOID";
@@ -70,9 +76,10 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 					url: url,
 					content: {
 						f: format,
+					},
+					load: function (htmlPopupResponse) {
+						deferred.resolve(getHtmlBodyContent(htmlPopupResponse.content));
 					}
-				}).then(function (htmlPopupResponse) {
-					deferred.resolve(getHtmlBodyContent(htmlPopupResponse.content));
 				});
 			} else {
 				deferred = new Deferred();
@@ -81,9 +88,10 @@ define(["esri/request", "dojo/Deferred", "esri/InfoTemplate"], function (esriReq
 					content: {
 						f: format,
 					},
-					handleAs: "text"
-				}).then(function (html) {
-					deferred.resolve(getHtmlBodyContent(html));
+					handleAs: "text",
+					load: function (html) {
+						deferred.resolve(getHtmlBodyContent(html));
+					}
 				});
 
 			}

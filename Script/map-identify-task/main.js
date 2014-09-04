@@ -73,8 +73,9 @@ define([
 	 * @param {external:Map} map
 	 * @param {number} [tolerance=5]
 	 * @param {RegExp} [ignoredUrls=null] - Any map services with URLs that match this RegExp will not participate in the map's Identify operation.
+	 * @param {number} [maxAllowableOffset=50]
 	 */
-	function MapIdentifyTask(map, tolerance, ignoredUrls) {
+	function MapIdentifyTask(map, tolerance, ignoredUrls, maxAllowableOffset) {
 		/** @member {external:Map} */
 		this.map = map;
 		/** @member {number} */
@@ -85,6 +86,8 @@ define([
 		this.ignoredUrls = ignoredUrls || null;
 		/** @member {Object.<string, ({RestApiLayer}|{Object.<string, RestApiLayer>})>}*/
 		this._layerInfos = {};
+		/** @member {number} */
+		this.maxAllowableOffset = typeof maxAllowableOffset === "number" ? maxAllowableOffset : 50;
 	}
 
 	/**
@@ -266,6 +269,7 @@ define([
 		parameters.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
 		parameters.returnGeometry = true;
 		parameters.tolerance = this.tolerance;
+		parameters.maxAllowableOffset = this.maxAllowableOffset;
 		// Set propetries of map.
 		parameters.mapExtent = this.map.extent;
 		parameters.width = this.map.width;

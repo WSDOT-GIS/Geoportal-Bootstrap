@@ -422,6 +422,9 @@
 
 		var basemapGallery = new BasemapGallery({
 			map: map,
+			basemapsGroup: {
+				id: "085a9cb0bb664d29bf62b731ccc4aa64"
+			},
 			basemapIds: map.layerIds
 		}, "basemapGallery");
 		basemapGallery.startup();
